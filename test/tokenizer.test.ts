@@ -1,0 +1,81 @@
+/// <reference path="../typings/test/tsd.d.ts" />
+
+import Parser = require('../lib/parser');
+import Tokenizer = require('../lib/tokenizer');
+import chai = require('chai');
+
+var expect = chai.expect;
+import CommandStringSource = Tokenizer.CommandStringSource;
+import CommandToken = Tokenizer.CommandToken;
+import TokenType = Tokenizer.TokenType;
+
+function tokenize (text: string): CommandToken[] {
+  var source = new CommandStringSource(text);
+  return source.tokenize();
+}
+
+function validateToken (token: CommandToken, text: string, tokenType: TokenType, start: number, end: number) {
+  expect(token.text).to.equals(text);
+  expect(token.type).to.equals(tokenType);
+  expect(token.location.startOffset.char).to.equals(start);
+  expect(token.location.endOffset.char).to.equals(end);
+}
+
+function itShouldTokenize(text: string, testFn: (tokens: CommandToken[]) => void) {
+  it('should tokenize "' + text + '"', () => {
+    var tokens = tokenize(text);
+    testFn(tokens);
+  });
+}
+
+describe('Tokenizer Tests:', () => {
+    describe('The tokenizer', () => {
+        itShouldTokenize('a', (tokens) => {
+            expect(tokens.length).to.equals(1);
+            validateToken(tokens[0], 'a', TokenType.Word, 0, 0);
+        });
+        itShouldTokenize(' a ', (tokens) => {
+            expect(tokens.length).to.equals(3);
+            validateToken(tokens[0], ' ', TokenType.Whitespace, 0, 0);
+            validateToken(tokens[1], 'a', TokenType.Word, 1, 1);
+            validateToken(tokens[2], ' ', TokenType.Whitespace, 2, 2);
+        });
+        itShouldTokenize('a b c', (tokens) => {
+            expect(tokens.length).to.equals(5);
+            validateToken(tokens[0], 'a', TokenType.Word, 0, 0);
+            validateToken(tokens[1], ' ', TokenType.Whitespace, 1, 1);
+            validateToken(tokens[2], 'b', TokenType.Word, 2, 2);
+            validateToken(tokens[3], ' ', TokenType.Whitespace, 3, 3);
+            validateToken(tokens[4], 'c', TokenType.Word, 4, 4);
+        });
+        itShouldTokenize(' aa bb  ccc ', (tokens) => {
+            expect(tokens.length).to.equals(7);
+            validateToken(tokens[0], ' ', TokenType.Whitespace, 0, 0);
+            validateToken(tokens[1], 'aa', TokenType.Word, 1, 2);
+            validateToken(tokens[2], ' ', TokenType.Whitespace, 3, 3);
+            validateToken(tokens[3], 'bb', TokenType.Word, 4, 5);
+            validateToken(tokens[4], '  ', TokenType.Whitespace, 6, 7);
+            validateToken(tokens[5], 'ccc', TokenType.Word, 8, 10);
+            validateToken(tokens[6], ' ', TokenType.Whitespace, 11, 11);
+        });
+    });
+
+    describe('The CommandParser', () => {
+        it('should consume tokenizer output', () => {
+            var handlerRan = false;
+            var showInterface = (parser: Parser.CommandParser): void => {
+                handlerRan = true;
+            };
+            var r = new Parser.RootNode();
+            var s = new Parser.SymbolNode('show');
+            s.addSuccessor(new Parser.CommandNode('interface', showInterface));
+            r.addSuccessor(s);
+            var p = new Parser.CommandParser(r);
+            var tokens = new CommandStringSource('show interface').tokenize();
+            p.parse(tokens);
+            p.execute();
+            expect(handlerRan).to.be.true;
+        });
+    });
+});
+

@@ -1,5 +1,5 @@
 {
-  "name": "command-interface",
+  "name": "workbench-commands",
   "version": "0.1.0",
   "description": "A command interface library for building browser-based CLIs.",
   "main": "lib/index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/debug-workbench/command-interface/"
+    "url": "https://github.com/debug-workbench/workbench-commands/"
   },
   "keywords": [
     "CLI",

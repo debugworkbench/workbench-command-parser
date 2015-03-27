@@ -77,6 +77,7 @@ module.exports = function(grunt) {
            basePath: 'src',
            declaration: true,
            module: 'commonjs',
+           noImplicitAny: true,
            sourceMap: true,
            target: 'es5'
          }
@@ -91,12 +92,8 @@ module.exports = function(grunt) {
        }
     },
     'watch': {
-      lib: {
-        files: 'src/**/*.ts',
-        tasks: ['tslint', 'typescript']
-      },
-      test: {
-        files: 'test/**/*.ts',
+      default: {
+        files: ['src/**/*.ts', 'test/**/*.ts'],
         tasks: ['test']
       }
     }
@@ -118,7 +115,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('run-tests', ['mochaTest']);
 
-  grunt.registerTask('test', ['tslint', 'typescript', 'run-tests']);
+  grunt.registerTask('test', ['typescript', 'tslint', 'run-tests']);
 
-  grunt.registerTask('default', ['lint', 'build', 'run-tests']);
+  grunt.registerTask('default', ['build', 'lint', 'run-tests']);
 };
