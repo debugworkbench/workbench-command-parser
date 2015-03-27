@@ -58,6 +58,18 @@ describe('Tokenizer Tests:', () => {
             validateToken(tokens[5], 'ccc', TokenType.Word, 8, 10);
             validateToken(tokens[6], ' ', TokenType.Whitespace, 11, 11);
         });
+        itShouldTokenize(' "a" ', (tokens) => {
+            expect(tokens.length).to.equals(3);
+            validateToken(tokens[0], ' ', TokenType.Whitespace, 0, 0);
+            validateToken(tokens[1], '"a"', TokenType.Word, 1, 3);
+            validateToken(tokens[2], ' ', TokenType.Whitespace, 4, 4);
+        });
+        itShouldTokenize(' "a\\\"" ', (tokens) => {
+            expect(tokens.length).to.equals(3);
+            validateToken(tokens[0], ' ', TokenType.Whitespace, 0, 0);
+            validateToken(tokens[1], '"a\\\""', TokenType.Word, 1, 5);
+            validateToken(tokens[2], ' ', TokenType.Whitespace, 6, 6);
+        });
     });
 
     describe('The CommandParser', () => {
