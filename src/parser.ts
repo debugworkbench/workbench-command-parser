@@ -11,7 +11,7 @@ export class CommandParser {
   nodes: ParserNode[] = [];
   tokens: CommandToken[] = [];
   commands: CommandNode[] = [];
-  parameters = {};
+  parameters: Map<string, any> = new Map();
 
   constructor (initialNode: ParserNode) {
     this.initialNode = initialNode;
@@ -26,6 +26,21 @@ export class CommandParser {
     this.currentNode = node;
     this.nodes.push(node);
     this.tokens.push(token);
+  }
+
+  getParameter (name: string, defaultValue?: any): any {
+    return this.parameters.get(name) || defaultValue;
+  }
+
+  pushParameter (param: ParameterNode, value: any): any {
+    if (param.repeatable) {
+      var list = this.parameters.get(param.name) || [];
+      list.push(value);
+      this.parameters.set(param.name, list);
+    } else {
+      this.parameters.set(param.name, value);
+    }
+    return value;
   }
 
   parse (tokens: CommandToken[]): void {
@@ -238,4 +253,7 @@ export class WrapperNode extends CommandNode {
 }
 
 export class ParameterNode extends SymbolNode {
+  public get name (): string {
+    return this.symbol;
+  }
 }

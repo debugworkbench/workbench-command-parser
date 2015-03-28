@@ -52,7 +52,7 @@ describe('Parser Tests:', () => {
     });
   });
 
-  describe('CommandParser', () => {
+  describe('The CommandParser', () => {
     it('errors when executing with no commands', () => {
       var n = new Parser.ParserNode();
       var p = new Parser.CommandParser(n);
@@ -72,6 +72,33 @@ describe('Parser Tests:', () => {
       p.advance(makeToken('interface'));
       p.execute();
       expect(handlerRan).to.be.true;
+    });
+    it('can handle an unset parameter name', () => {
+      var n = new Parser.ParserNode();
+      var p = new Parser.CommandParser(n);
+      expect(p.getParameter('none')).to.be.undefined;
+      expect(p.getParameter('none', true)).to.be.true;
+    });
+    it('can remember parameter values', () => {
+      var n = new Parser.ParserNode();
+      var p = new Parser.CommandParser(n);
+      var paramA = new Parser.ParameterNode('a');
+      p.pushParameter(paramA, 'A');
+      expect(p.getParameter('a')).to.equals('A');
+      var paramB = new Parser.ParameterNode('b');
+      p.pushParameter(paramB, 'B');
+      expect(p.getParameter('a')).to.equals('A');
+      expect(p.getParameter('b')).to.equals('B');
+    });
+    it('can handle repeatable parameters', () => {
+      var n = new Parser.ParserNode();
+      var p = new Parser.CommandParser(n);
+      var paramA = new Parser.ParameterNode('a');
+      paramA.repeatable = true;
+      p.pushParameter(paramA, 'A');
+      expect(p.getParameter('a')).to.deep.equal(['A']);
+      p.pushParameter(paramA, 'B');
+      expect(p.getParameter('a')).to.deep.equal(['A', 'B']);
     });
   });
 
