@@ -108,11 +108,15 @@ export class CommandCompletion {
  *  commands install their handlers.
  */
 export class ParserNode {
-  successors: ParserNode[] = [];
+  successors_: ParserNode[] = [];
   priority: NodePriority = NodePriority.Default;
   hidden: boolean = false;
   repeatable: boolean = false;
   repeatMarker: ParserNode | boolean = false;
+
+  public get successors (): ParserNode[] {
+    return this.successors_;
+  }
 
   toString (): string {
     return '[ParserNode]';
@@ -171,7 +175,7 @@ export class ParserNode {
   }
 
   addSuccessor (node: ParserNode): void {
-    this.successors.push(node);
+    this.successors_.push(node);
   }
 }
 
@@ -253,7 +257,31 @@ export class WrapperNode extends CommandNode {
 }
 
 export class ParameterNode extends SymbolNode {
+  command: CommandNode;
+
+  constructor (command: CommandNode, name: string) {
+    super(name);
+    this.command = command;
+    this.command.addSuccessor(this);
+  }
+
   public get name (): string {
     return this.symbol;
+  }
+
+  public get successors (): ParserNode[] {
+    if (this.command) {
+      return this.command.successors.concat(this.successors_);
+    } else {
+      return this.successors_;
+    }
+  }
+
+  convert (parser: CommandParser, token: CommandToken): any {
+    return token.text;
+  }
+
+  accept (parser: CommandParser, token: CommandToken): void {
+    parser.pushParameter(this, this.convert(parser, token));
   }
 }
