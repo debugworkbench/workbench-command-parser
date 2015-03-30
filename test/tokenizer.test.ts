@@ -80,7 +80,7 @@ describe('Tokenizer Tests:', () => {
             };
             var r = new Parser.RootNode();
             var s = new Parser.SymbolNode('show');
-            s.addSuccessor(new Parser.CommandNode('interface', showInterface));
+            s.addSuccessor(new Parser.Command('interface', showInterface));
             r.addSuccessor(s);
             var p = new Parser.CommandParser(r);
             var tokens = new CommandStringSource('show interface').tokenize();
