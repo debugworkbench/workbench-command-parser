@@ -22,6 +22,10 @@ export class CommandParser {
     this.commands.push(command);
   }
 
+  nodeSeen (node: ParserNode): boolean {
+    return this.nodes.indexOf(node) >= 0;
+  }
+
   pushNode (token: CommandToken, node: ParserNode): void {
     this.currentNode = node;
     this.nodes.push(node);
@@ -111,12 +115,6 @@ export class ParserNode {
   protected successors_: ParserNode[] = [];
   protected priority_: NodePriority = NodePriority.Default;
   protected hidden_: boolean = false;
-  protected repeatable_: boolean = false;
-  protected repeatMarker_: ParserNode | boolean = false;
-
-  public get repeatable (): boolean {
-    return this.repeatable_;
-  }
 
   public get successors (): ParserNode[] {
     return this.successors_;
@@ -160,16 +158,7 @@ export class ParserNode {
    * cases where another node can preclude our occurrence.
    */
   acceptable (parser: CommandParser): boolean {
-    if (this.repeatable) {
-      return true;
-    } else {
-      /*
-      ~member?(node, parser-nodes(parser))
-        & (node-repeat-marker(node) == #f
-             | ~member?(node-repeat-marker(node), parser-nodes(parser)));
-      */
-      return true;
-    }
+    return false === parser.nodeSeen(this);
   }
 
   matchingSuccessors(parser: CommandParser, token: CommandToken): ParserNode[] {
@@ -270,6 +259,12 @@ export interface ParameterOptions {
 
 export class Parameter extends SymbolNode {
   private command: Command;
+  private repeatable_: boolean = false;
+  private repeatMarker_: ParserNode;
+
+  public get repeatable (): boolean {
+    return this.repeatable_;
+  }
 
   constructor (command: Command, name: string, options?: ParameterOptions) {
     super(name);
@@ -300,5 +295,17 @@ export class Parameter extends SymbolNode {
 
   accept (parser: CommandParser, token: CommandToken): void {
     parser.pushParameter(this, this.convert(parser, token));
+  }
+
+  acceptable (parser: CommandParser): boolean {
+    if (this.repeatable) {
+      return true;
+    } else {
+      // If we haven't been seen, but we have a repeat marker,
+      // and that marker hasn't been seen, then we're acceptable.
+      return !parser.nodeSeen(this) &&
+             ((this.repeatMarker_ === undefined) ||
+              (!parser.nodeSeen(this.repeatMarker_)));
+    }
   }
 }
