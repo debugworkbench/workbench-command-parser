@@ -5,13 +5,13 @@ import CommandToken = tokenizer.CommandToken;
 import TokenType = tokenizer.TokenType;
 
 export class CommandParser {
-  source: CommandSource;
-  initialNode: ParserNode;
-  currentNode: ParserNode;
-  nodes: ParserNode[] = [];
-  tokens: CommandToken[] = [];
-  commands: Command[] = [];
-  parameters: Map<string, any> = new Map();
+  private source: CommandSource;
+  private initialNode: ParserNode;
+  private currentNode: ParserNode;
+  private nodes: ParserNode[] = [];
+  private tokens: CommandToken[] = [];
+  private commands: Command[] = [];
+  private parameters: Map<string, any> = new Map();
 
   constructor (initialNode: ParserNode) {
     this.initialNode = initialNode;
@@ -68,7 +68,7 @@ export class CommandParser {
   execute (): void {
     if (this.commands.length > 0) {
       var command = this.commands[this.commands.length - 1];
-      command.handler(this);
+      command.execute(this);
     } else {
       throw("No command.");
     }
@@ -108,11 +108,15 @@ export class CommandCompletion {
  *  commands install their handlers.
  */
 export class ParserNode {
-  successors_: ParserNode[] = [];
-  priority: NodePriority = NodePriority.Default;
-  hidden: boolean = false;
-  repeatable: boolean = false;
-  repeatMarker: ParserNode | boolean = false;
+  protected successors_: ParserNode[] = [];
+  protected priority_: NodePriority = NodePriority.Default;
+  protected hidden_: boolean = false;
+  protected repeatable_: boolean = false;
+  protected repeatMarker_: ParserNode | boolean = false;
+
+  public get repeatable (): boolean {
+    return this.repeatable_;
+  }
 
   public get successors (): ParserNode[] {
     return this.successors_;
@@ -194,7 +198,7 @@ export class RootNode extends ParserNode {
 }
 
 export class SymbolNode extends ParserNode {
-  symbol: string;
+  protected symbol: string;
 
   constructor (symbol: string) {
     super();
@@ -212,12 +216,12 @@ export class SymbolNode extends ParserNode {
 }
 
 export class Command extends SymbolNode {
-  help: string;
-  handler: Function;
-  parameters: Parameter[] = [];
-  flagParameters: Parameter[] = [];
-  namedParameters: Parameter[] = [];
-  simpleParameters: Parameter[] = [];
+  private help: string;
+  private handler: Function;
+  private parameters: Parameter[] = [];
+  private flagParameters: Parameter[] = [];
+  private namedParameters: Parameter[] = [];
+  private simpleParameters: Parameter[] = [];
 
   constructor (name: string, handler: Function) {
     super(name);
@@ -233,6 +237,10 @@ export class Command extends SymbolNode {
       parser.pushCommand(this);
     }
   }
+
+  execute (parser: CommandParser): void {
+    this.handler(parser);
+  }
 }
 
 /**
@@ -244,7 +252,7 @@ export class Command extends SymbolNode {
  *
  */
 export class WrapperNode extends Command {
-  root: ParserNode;
+  private root: ParserNode;
 
   constructor (symbol: string, root: ParserNode) {
     super(symbol, undefined);
@@ -256,13 +264,22 @@ export class WrapperNode extends Command {
   }
 }
 
-export class Parameter extends SymbolNode {
-  command: Command;
+export interface ParameterOptions {
+  repeatable: boolean;
+}
 
-  constructor (command: Command, name: string) {
+export class Parameter extends SymbolNode {
+  private command: Command;
+
+  constructor (command: Command, name: string, options?: ParameterOptions) {
     super(name);
     this.command = command;
     this.command.addSuccessor(this);
+    if (options) {
+      if (options.repeatable !== undefined) {
+        this.repeatable_ = options.repeatable;
+      }
+    }
   }
 
   public get name (): string {

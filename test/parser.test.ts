@@ -112,8 +112,7 @@ describe('Parser Tests:', () => {
       var n = new Parser.ParserNode();
       var c = new Parser.Command('test', nullCommandHandler);
       var p = new Parser.CommandParser(n);
-      var paramA = new Parser.Parameter(c, 'a');
-      paramA.repeatable = true;
+      var paramA = new Parser.Parameter(c, 'a', { repeatable: true });
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.deep.equal(['A']);
       p.pushParameter(paramA, 'B');

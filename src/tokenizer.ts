@@ -31,14 +31,26 @@ export enum TokenType {
 }
 
 export class CommandToken {
-  text: string;
-  type: TokenType;
-  location: SourceLocation;
+  private text_: string;
+  private type_: TokenType;
+  private location_: SourceLocation;
 
   constructor (text: string, type: TokenType, location: SourceLocation) {
-    this.text = text;
-    this.type = type;
-    this.location = location;
+    this.text_ = text;
+    this.type_ = type;
+    this.location_ = location;
+  }
+
+  public get text (): string {
+    return this.text_;
+  }
+
+  public get type (): TokenType {
+    return this.type_;
+  }
+
+  public get location (): SourceLocation {
+    return this.location_;
   }
 }
 
