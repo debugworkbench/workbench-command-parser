@@ -64,6 +64,12 @@ describe('Tokenizer Tests:', () => {
             validateToken(tokens[1], '"a"', TokenType.Word, 1, 3);
             validateToken(tokens[2], ' ', TokenType.Whitespace, 4, 4);
         });
+        itShouldTokenize(' "a b" ', (tokens) => {
+            expect(tokens.length).to.equals(3);
+            validateToken(tokens[0], ' ', TokenType.Whitespace, 0, 0);
+            validateToken(tokens[1], '"a b"', TokenType.Word, 1, 5);
+            validateToken(tokens[2], ' ', TokenType.Whitespace, 6, 6);
+        });
         itShouldTokenize(' "a\\\"" ', (tokens) => {
             expect(tokens.length).to.equals(3);
             validateToken(tokens[0], ' ', TokenType.Whitespace, 0, 0);
