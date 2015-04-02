@@ -17,6 +17,23 @@ function nullCommandHandler (): void {
 
 describe('Parser Tests:', () => {
 
+  describe('longestCommonPrefix', () => {
+    var longestCommonPrefix = Parser.longestCommonPrefix;
+    it('handles empty options', () => {
+      expect(longestCommonPrefix([])).to.equal('');
+    });
+    it('handles no common prefixes', () => {
+      expect(longestCommonPrefix(['a', 'b', 'c'])).to.equal('');
+    });
+    it('handles having a common prefix', () => {
+      expect(longestCommonPrefix(['aa', 'ab', 'ac'])).to.equal('a');
+      expect(longestCommonPrefix(['aba', 'abb', 'abc'])).to.equal('ab');
+    });
+    it('handles the common prefix being the shortest string', () => {
+      expect(longestCommonPrefix(['aba', 'ab', 'abc'])).to.equal('ab');
+    });
+  });
+
   describe('ParserNode', () => {
     it('manages successors', () => {
       var node = new Parser.ParserNode();

@@ -47,6 +47,14 @@ export class CommandParser {
     return value;
   }
 
+  complete (token?: CommandToken): Completion[] {
+    var completions = this.currentNode.possibleCompletions(this, token);
+    var completionForNode = (node: ParserNode): Completion => {
+      return node.complete(this, token);
+    };
+    return completions.map(completionForNode);
+  }
+
   parse (tokens: CommandToken[]): void {
     tokens.forEach(token => {
       if (token.type !== TokenType.Whitespace) {
@@ -85,7 +93,92 @@ export enum NodePriority {
   Default = 0
 }
 
-export class CommandCompletion {
+export class Completion {
+  node: ParserNode;
+  helpSymbol: string;
+  helpText: string;
+  token: CommandToken;
+  exhaustive: boolean = false;
+  options: CompletionOption[];
+}
+
+export class CompletionOption {
+  completion: Completion;
+  optionString: string;
+  complete: boolean = false;
+
+  constructor (completion: Completion, optionString: string, complete: boolean) {
+    this.completion = completion;
+    this.optionString = optionString;
+    this.complete = complete;
+  }
+}
+
+export interface CompletionConfig {
+  exhaustive: boolean;
+  completeOptions?: string[];
+  otherOptions?: string[];
+}
+
+function makeCompletion(node: ParserNode, token: CommandToken, options: CompletionConfig): Completion {
+  var completion = new Completion();
+  completion.node = node;
+  completion.token = token;
+  completion.helpSymbol = node.helpSymbol();
+  completion.helpText = node.helpText();
+  if (options.exhaustive === undefined) {
+    completion.exhaustive = options.exhaustive;
+  } else {
+    completion.exhaustive = false;
+  }
+  var completeOptions = options.completeOptions || [];
+  var otherOptions = options.otherOptions || [];
+  if (token) {
+    completeOptions = completeOptions.filter((option): boolean => {
+      // POLYFILL: No String.startsWith.
+      return option.lastIndexOf(token.text) === 0;
+    });
+    otherOptions = otherOptions.filter((option): boolean => {
+      // POLYFILL: No String.startsWith.
+      return option.lastIndexOf(token.text) === 0;
+    });
+    if (!completion.exhaustive) {
+      // If not exhaustive, then add the current token as an incomplete option.
+      if ((completeOptions.indexOf(token.text) === -1) &&
+          (otherOptions.indexOf(token.text) === -1)) {
+        otherOptions.push(token.text);
+      }
+    }
+  }
+  var allOptions = completeOptions.concat(otherOptions);
+  var lcp = longestCommonPrefix(allOptions);
+  if (lcp && allOptions.indexOf(lcp) === -1) {
+    if (!token || (lcp !== token.text)) {
+      otherOptions.push(lcp);
+    }
+  }
+  completion.options = completeOptions.map((optionString): CompletionOption => {
+    return new CompletionOption(completion, optionString, true);
+  }).concat(otherOptions.map((optionString): CompletionOption => {
+    return new CompletionOption(completion, optionString, false);
+  }));
+  return completion;
+}
+
+export function longestCommonPrefix(options: string[]): string {
+  if (options.length > 0) {
+    for (var i = 0; ; i++) {
+      var first = options[0];
+      for (var j = 0; j < options.length; j++) {
+        var option = options[j];
+        if ((i === option.length) || (option[i] !== first[i])) {
+          return first.slice(0, i);
+        }
+      }
+    }
+  } else {
+    return "";
+  }
 }
 
 /**
@@ -120,6 +213,14 @@ export class ParserNode {
     return this.successors_;
   }
 
+  public helpSymbol (): string {
+    return "<...>";
+  }
+
+  public helpText (): string {
+    return "No help.";
+  }
+
   toString (): string {
     return '[ParserNode]';
   }
@@ -129,8 +230,8 @@ export class ParserNode {
    *
    * May or may not be provided a partial token.
    */
-  complete (parser: CommandParser, token: CommandToken | boolean): CommandCompletion[] {
-    return [];
+  complete (parser: CommandParser, token?: CommandToken): Completion {
+    return makeCompletion(this, token, { exhaustive: true });
   }
 
   /**
@@ -161,7 +262,13 @@ export class ParserNode {
     return false === parser.nodeSeen(this);
   }
 
-  matchingSuccessors(parser: CommandParser, token: CommandToken): ParserNode[] {
+  possibleCompletions (parser: CommandParser, token?: CommandToken): ParserNode[] {
+    return this.successors.filter(node => {
+      return !node.hidden_ && node.acceptable(parser) && (!token || node.match(parser, token));
+    });
+  }
+
+  matchingSuccessors (parser: CommandParser, token: CommandToken): ParserNode[] {
     return this.successors.filter(node => {
       return node.acceptable(parser) && node.match(parser, token);
     });
@@ -177,7 +284,7 @@ export class RootNode extends ParserNode {
     return '[RootNode]';
   }
 
-  complete (parser: CommandParser, token: CommandToken | boolean): CommandCompletion[] {
+  complete (parser: CommandParser, token: CommandToken | boolean): Completion {
     throw("BUG: Tried to complete a root node.");
   }
 
@@ -196,6 +303,21 @@ export class SymbolNode extends ParserNode {
 
   toString (): string {
     return '[SymbolNode: ' + this.symbol + ']';
+  }
+
+  public helpSymbol (): string {
+    return this.symbol;
+  }
+
+  public helpText (): string {
+    return "";
+  }
+
+  complete (parser: CommandParser, token?: CommandToken): Completion {
+    return makeCompletion(this, token, {
+                            exhaustive: true,
+                            completeOptions: [this.symbol]
+                          });
   }
 
   match (parse: CommandParser, token: CommandToken): boolean {
@@ -227,6 +349,13 @@ export class Command extends SymbolNode {
     }
   }
 
+  complete (parser: CommandParser, token?: CommandToken): Completion {
+    return makeCompletion(this, token, {
+                            exhaustive: true,
+                            completeOptions: [this.symbol]
+                          });
+  }
+
   execute (parser: CommandParser): void {
     this.handler(parser);
   }
@@ -254,10 +383,12 @@ export class WrapperNode extends Command {
 }
 
 export interface ParameterOptions {
-  repeatable: boolean;
+  help?: string;
+  repeatable?: boolean;
 }
 
 export class Parameter extends SymbolNode {
+  private help: string;
   private command: Command;
   private repeatable_: boolean = false;
   private repeatMarker_: ParserNode;
@@ -274,6 +405,7 @@ export class Parameter extends SymbolNode {
       if (options.repeatable !== undefined) {
         this.repeatable_ = options.repeatable;
       }
+      this.help = options.help;
     }
   }
 
@@ -289,8 +421,24 @@ export class Parameter extends SymbolNode {
     }
   }
 
+  public helpSymbol (): string {
+    if (this.repeatable) {
+      return "<" + this.name + ">...";
+    } else {
+      return "<" + this.name + ">";
+    }
+  }
+
+  public helpText (): string {
+    return this.help || "Parameter";
+  }
+
   convert (parser: CommandParser, token: CommandToken): any {
     return token.text;
+  }
+
+  complete (parser: CommandParser, token?: CommandToken): Completion {
+    return makeCompletion(this, token, { exhaustive: true });
   }
 
   accept (parser: CommandParser, token: CommandToken): void {
