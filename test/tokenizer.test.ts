@@ -16,7 +16,7 @@ function tokenize (text: string): CommandToken[] {
 
 function validateToken (token: CommandToken, text: string, tokenType: TokenType, start: number, end: number) {
   expect(token.text).to.equals(text);
-  expect(token.type).to.equals(tokenType);
+  expect(token.tokenType).to.equals(tokenType);
   expect(token.location.startOffset.char).to.equals(start);
   expect(token.location.endOffset.char).to.equals(end);
 }

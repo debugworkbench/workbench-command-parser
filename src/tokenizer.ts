@@ -32,12 +32,12 @@ export enum TokenType {
 
 export class CommandToken {
   private text_: string;
-  private type_: TokenType;
+  private tokenType_: TokenType;
   private location_: SourceLocation;
 
-  constructor (text: string, type: TokenType, location: SourceLocation) {
+  constructor (text: string, tokenType: TokenType, location: SourceLocation) {
     this.text_ = text;
-    this.type_ = type;
+    this.tokenType_ = tokenType;
     this.location_ = location;
   }
 
@@ -45,8 +45,8 @@ export class CommandToken {
     return this.text_;
   }
 
-  public get type (): TokenType {
-    return this.type_;
+  public get tokenType (): TokenType {
+    return this.tokenType_;
   }
 
   public get location (): SourceLocation {

@@ -57,7 +57,7 @@ export class CommandParser {
 
   parse (tokens: CommandToken[]): void {
     tokens.forEach(token => {
-      if (token.type !== TokenType.Whitespace) {
+      if (token.tokenType !== TokenType.Whitespace) {
         this.advance(token);
       }
     });
