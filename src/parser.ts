@@ -1,8 +1,4 @@
-import tokenizer = require('./tokenizer');
-
-import CommandSource = tokenizer.CommandSource;
-import CommandToken = tokenizer.CommandToken;
-import TokenType = tokenizer.TokenType;
+import { CommandSource, CommandToken, TokenType } from './tokenizer';
 
 export class CommandParser {
   private source: CommandSource;
