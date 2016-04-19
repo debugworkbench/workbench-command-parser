@@ -4,7 +4,10 @@
   "description": "A command interface library for building browser-based CLIs.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p src",
+    "docs": "./node_modules/typedoc/bin/typedoc --mode modules --out docs --target es6 src/*.ts",
+    "lint": "./node_modules/tslint/bin/tslint  -c conf/tslint.json src/*.ts test/*.ts",
+    "test": "tsc -p src && tsc -p test && ./node_modules/mocha/bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -17,17 +20,10 @@
   "author": "Bruce Mitchener, Jr.",
   "license": "MIT",
   "devDependencies": {
-    "chai": "^2.2.0",
-    "grunt": "^0.4.5",
-    "grunt-contrib-jshint": "^0.11.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-mocha-test": "^0.12.7",
-    "grunt-tsd": "^0.2.0-beta.1",
-    "grunt-tslint": "^2.0.0",
-    "grunt-typedoc": "^0.2.2",
-    "grunt-typescript": "^0.6.1",
-    "mocha": "^2.2.1",
-    "tslint": "^2.1.1",
-    "typescript": "^1.4.1"
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "tslint": "^3.7.4",
+    "typedoc": "^0.3.12",
+    "typescript": "^1.8.10"
   }
 }
