@@ -275,6 +275,11 @@ export class ParserNode {
   }
 }
 
+/**
+ * Root of a command hierarchy.
+ *
+ * May not be completed or matched.
+ */
 export class RootNode extends ParserNode {
   toString (): string {
     return '[RootNode]';
@@ -289,6 +294,11 @@ export class RootNode extends ParserNode {
   }
 }
 
+/**
+ * A fixed string.
+ *
+ * Used to build commands and parameter prefixes.
+ */
 export class SymbolNode extends ParserNode {
   protected symbol: string;
 
@@ -322,6 +332,9 @@ export class SymbolNode extends ParserNode {
   }
 }
 
+/**
+ * Commands are symbols with a handler and parameter requirements.
+ */
 export class Command extends SymbolNode {
   private help: string;
   private handler: Function;
