@@ -365,6 +365,17 @@ export class Command extends SymbolNode {
                           });
   }
 
+  addParameter (parameter: Parameter): void {
+    this.parameters.push(parameter);
+    if (parameter.parameterKind === ParameterKind.Flag) {
+      this.flagParameters.push(parameter);
+    } else if (parameter.parameterKind === ParameterKind.Named) {
+      this.namedParameters.push(parameter);
+    } else if (parameter.parameterKind === ParameterKind.Simple) {
+      this.simpleParameters.push(parameter);
+    }
+  }
+
   execute (parser: CommandParser): void {
     this.handler(parser);
   }
@@ -391,16 +402,28 @@ export class WrapperNode extends Command {
   }
 }
 
+export enum ParameterKind {
+  Flag,
+  Named,
+  Simple
+}
+
 export interface ParameterOptions {
+  parameterKind?: ParameterKind;
   help?: string;
   repeatable?: boolean;
 }
 
 export class Parameter extends SymbolNode {
+  private parameterKind_: ParameterKind = ParameterKind.Simple;
   private help: string;
   private command: Command;
   private repeatable_: boolean = false;
   private repeatMarker_: ParserNode;
+
+  public get parameterKind (): ParameterKind {
+    return this.parameterKind_;
+  }
 
   public get repeatable (): boolean {
     return this.repeatable_;
@@ -409,13 +432,17 @@ export class Parameter extends SymbolNode {
   constructor (command: Command, name: string, options?: ParameterOptions) {
     super(name);
     this.command = command;
-    this.command.addSuccessor(this);
     if (options) {
+      if (options.parameterKind !== undefined) {
+        this.parameterKind_ = options.parameterKind;
+      }
       if (options.repeatable !== undefined) {
         this.repeatable_ = options.repeatable;
       }
       this.help = options.help;
     }
+    this.command.addSuccessor(this);
+    this.command.addParameter(this);
   }
 
   public get name (): string {
