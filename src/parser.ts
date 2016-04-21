@@ -338,10 +338,11 @@ export class SymbolNode extends ParserNode {
 export class Command extends SymbolNode {
   private help: string;
   private handler: Function;
-  private parameters: Parameter[] = [];
-  private flagParameters: Parameter[] = [];
-  private namedParameters: Parameter[] = [];
-  private simpleParameters: Parameter[] = [];
+  private parameters_: Parameter[] = [];
+
+  public get parameters (): Parameter[] {
+    return this.parameters_;
+  }
 
   constructor (name: string, handler: Function) {
     super(name);
@@ -366,14 +367,7 @@ export class Command extends SymbolNode {
   }
 
   addParameter (parameter: Parameter): void {
-    this.parameters.push(parameter);
-    if (parameter.parameterKind === ParameterKind.Flag) {
-      this.flagParameters.push(parameter);
-    } else if (parameter.parameterKind === ParameterKind.Named) {
-      this.namedParameters.push(parameter);
-    } else if (parameter.parameterKind === ParameterKind.Simple) {
-      this.simpleParameters.push(parameter);
-    }
+    this.parameters_.push(parameter);
   }
 
   execute (parser: CommandParser): void {
