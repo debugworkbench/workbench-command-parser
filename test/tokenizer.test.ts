@@ -1,13 +1,8 @@
 /// <reference path="../typings/test/tsd.d.ts" />
 
-import Parser = require('../lib/parser');
-import Tokenizer = require('../lib/tokenizer');
-import chai = require('chai');
-
-var expect = chai.expect;
-import CommandStringSource = Tokenizer.CommandStringSource;
-import CommandToken = Tokenizer.CommandToken;
-import TokenType = Tokenizer.TokenType;
+import * as Parser from '../lib/parser';
+import { CommandStringSource, CommandToken, TokenType } from '../lib/tokenizer';
+import { expect } from 'chai';
 
 function tokenize (text: string): CommandToken[] {
   const source = new CommandStringSource(text);
