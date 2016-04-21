@@ -92,6 +92,13 @@ describe('Parser Tests:', () => {
       var p = new Parser.CommandParser(n);
       expect(p.execute.bind(p)).to.throw('No command.');
     });
+    it('is not valid when no command accepted', () => {
+      var n = new Parser.ParserNode();
+      var p = new Parser.CommandParser(n);
+      let errors: Array<string> = [];
+      expect(p.verify(errors)).to.be.false;
+      expect(errors).to.deep.equal(['Incomplete command.']);
+    });
     it('can advance to a command', () => {
       var handlerRan = false;
       var showInterface = (parser: Parser.CommandParser): void => {
@@ -104,6 +111,9 @@ describe('Parser Tests:', () => {
       var p = new Parser.CommandParser(r);
       p.advance(makeToken('show'));
       p.advance(makeToken('interface'));
+      let errors: Array<string> = [];
+      expect(p.verify(errors)).to.be.true;
+      expect(errors).to.deep.equal([]);
       p.execute();
       expect(handlerRan).to.be.true;
     });

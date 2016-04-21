@@ -81,6 +81,26 @@ export class CommandParser {
       throw("No command.");
     }
   }
+
+  verify (errorAccumulator: Array<string>): boolean {
+    if (this.commands.length > 0) {
+      const command = this.commands[this.commands.length - 1];
+      const expected = command.parameters;
+      const provided = this.parameters;
+      expected.forEach(parameter => {
+        if (parameter.required) {
+          if (false === provided.has(parameter.name)) {
+            errorAccumulator.push('Missing required parameter "' + parameter.name + '".');
+            return false;
+          }
+        }
+      });
+    } else {
+       errorAccumulator.push('Incomplete command.');
+       return false;
+    }
+    return true;
+  }
 }
 
 export enum NodePriority {
