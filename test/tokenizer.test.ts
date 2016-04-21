@@ -10,7 +10,7 @@ import CommandToken = Tokenizer.CommandToken;
 import TokenType = Tokenizer.TokenType;
 
 function tokenize (text: string): CommandToken[] {
-  var source = new CommandStringSource(text);
+  const source = new CommandStringSource(text);
   return source.tokenize();
 }
 
@@ -23,7 +23,7 @@ function validateToken (token: CommandToken, text: string, tokenType: TokenType,
 
 function itShouldTokenize(text: string, testFn: (tokens: CommandToken[]) => void) {
   it('should tokenize "' + text + '"', () => {
-    var tokens = tokenize(text);
+    const tokens = tokenize(text);
     testFn(tokens);
   });
 }
@@ -80,16 +80,16 @@ describe('Tokenizer Tests:', () => {
 
     describe('The CommandParser', () => {
         it('should consume tokenizer output', () => {
-            var handlerRan = false;
-            var showInterface = (parser: Parser.CommandParser): void => {
+            let handlerRan = false;
+            const showInterface = (parser: Parser.CommandParser): void => {
                 handlerRan = true;
             };
-            var r = new Parser.RootNode();
-            var s = new Parser.SymbolNode('show');
+            const r = new Parser.RootNode();
+            const s = new Parser.SymbolNode('show');
             s.addSuccessor(new Parser.Command('interface', showInterface));
             r.addSuccessor(s);
-            var p = new Parser.CommandParser(r);
-            var tokens = new CommandStringSource('show interface').tokenize();
+            const p = new Parser.CommandParser(r);
+            const tokens = new CommandStringSource('show interface').tokenize();
             p.parse(tokens);
             p.execute();
             expect(handlerRan).to.be.true;
