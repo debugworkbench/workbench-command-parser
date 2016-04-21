@@ -412,6 +412,7 @@ export interface ParameterOptions {
   parameterKind?: ParameterKind;
   help?: string;
   repeatable?: boolean;
+  required?: boolean;
 }
 
 export class Parameter extends SymbolNode {
@@ -420,6 +421,7 @@ export class Parameter extends SymbolNode {
   private command: Command;
   private repeatable_: boolean = false;
   private repeatMarker_: ParserNode;
+  private required_: boolean = false;
 
   public get parameterKind (): ParameterKind {
     return this.parameterKind_;
@@ -427,6 +429,10 @@ export class Parameter extends SymbolNode {
 
   public get repeatable (): boolean {
     return this.repeatable_;
+  }
+
+  public get required (): boolean {
+    return this.required_;
   }
 
   constructor (command: Command, name: string, options?: ParameterOptions) {
@@ -438,6 +444,9 @@ export class Parameter extends SymbolNode {
       }
       if (options.repeatable !== undefined) {
         this.repeatable_ = options.repeatable;
+      }
+      if (options.required !== undefined) {
+        this.required_ = options.required;
       }
       this.help = options.help;
     }
