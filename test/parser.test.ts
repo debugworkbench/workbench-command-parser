@@ -58,9 +58,9 @@ describe('Parser Tests:', () => {
 
   describe('Parameter', () => {
     it('includes the command as a successor', () => {
-      const command = new Parser.Command('test', nullCommandHandler);
-      const parameterP = new Parser.Parameter(command, 'p');
-      const parameterQ = new Parser.Parameter(command, 'q');
+      const command = new Parser.CommandNode('test', nullCommandHandler);
+      const parameterP = new Parser.ParameterNode(command, 'p');
+      const parameterQ = new Parser.ParameterNode(command, 'q');
       const node = new Parser.ParserNode();
       parameterP.addSuccessor(node);
       expect(command.successors).to.deep.equal([parameterP, parameterQ]);
@@ -105,7 +105,7 @@ describe('Parser Tests:', () => {
       };
       const r = new Parser.RootNode();
       const s = new Parser.SymbolNode('show');
-      s.addSuccessor(new Parser.Command('interface', showInterface));
+      s.addSuccessor(new Parser.CommandNode('interface', showInterface));
       r.addSuccessor(s);
       const p = new Parser.CommandParser(r);
       p.advance(makeToken('show'));
@@ -124,21 +124,21 @@ describe('Parser Tests:', () => {
     });
     it('can remember parameter values', () => {
       const n = new Parser.ParserNode();
-      const c = new Parser.Command('test', nullCommandHandler);
+      const c = new Parser.CommandNode('test', nullCommandHandler);
       const p = new Parser.CommandParser(n);
-      const paramA = new Parser.Parameter(c, 'a');
+      const paramA = new Parser.ParameterNode(c, 'a');
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.equals('A');
-      const paramB = new Parser.Parameter(c, 'b');
+      const paramB = new Parser.ParameterNode(c, 'b');
       p.pushParameter(paramB, 'B');
       expect(p.getParameter('a')).to.equals('A');
       expect(p.getParameter('b')).to.equals('B');
     });
     it('can handle repeatable parameters', () => {
       const n = new Parser.ParserNode();
-      const c = new Parser.Command('test', nullCommandHandler);
+      const c = new Parser.CommandNode('test', nullCommandHandler);
       const p = new Parser.CommandParser(n);
-      const paramA = new Parser.Parameter(c, 'a', { repeatable: true });
+      const paramA = new Parser.ParameterNode(c, 'a', { repeatable: true });
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.deep.equal(['A']);
       p.pushParameter(paramA, 'B');

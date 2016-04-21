@@ -81,7 +81,7 @@ describe('Tokenizer Tests:', () => {
             };
             const r = new Parser.RootNode();
             const s = new Parser.SymbolNode('show');
-            s.addSuccessor(new Parser.Command('interface', showInterface));
+            s.addSuccessor(new Parser.CommandNode('interface', showInterface));
             r.addSuccessor(s);
             const p = new Parser.CommandParser(r);
             const tokens = new CommandStringSource('show interface').tokenize();

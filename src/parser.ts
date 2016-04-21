@@ -6,7 +6,7 @@ export class CommandParser {
   private currentNode: ParserNode;
   private nodes: ParserNode[] = [];
   private tokens: CommandToken[] = [];
-  private commands: Command[] = [];
+  private commands: CommandNode[] = [];
   private parameters: Map<string, any> = new Map();
 
   constructor (initialNode: ParserNode) {
@@ -14,7 +14,7 @@ export class CommandParser {
     this.currentNode = this.initialNode;
   }
 
-  pushCommand (command: Command): void {
+  pushCommand (command: CommandNode): void {
     this.commands.push(command);
   }
 
@@ -32,7 +32,7 @@ export class CommandParser {
     return this.parameters.get(name) || defaultValue;
   }
 
-  pushParameter (param: Parameter, value: any): any {
+  pushParameter (param: ParameterNode, value: any): any {
     if (param.repeatable) {
       var list = this.parameters.get(param.name) || [];
       list.push(value);
@@ -355,12 +355,12 @@ export class SymbolNode extends ParserNode {
 /**
  * Commands are symbols with a handler and parameter requirements.
  */
-export class Command extends SymbolNode {
+export class CommandNode extends SymbolNode {
   private help: string;
   private handler: Function;
-  private parameters_: Parameter[] = [];
+  private parameters_: ParameterNode[] = [];
 
-  public get parameters (): Parameter[] {
+  public get parameters (): ParameterNode[] {
     return this.parameters_;
   }
 
@@ -386,7 +386,7 @@ export class Command extends SymbolNode {
                           });
   }
 
-  addParameter (parameter: Parameter): void {
+  addParameter (parameter: ParameterNode): void {
     this.parameters_.push(parameter);
   }
 
@@ -403,7 +403,7 @@ export class Command extends SymbolNode {
  * They will have the successors of the given ROOT.
  *
  */
-export class WrapperNode extends Command {
+export class WrapperNode extends CommandNode {
   private root: ParserNode;
 
   constructor (symbol: string, root: ParserNode) {
@@ -429,8 +429,8 @@ export interface ParameterOptions {
   required?: boolean;
 }
 
-export class Parameter extends SymbolNode {
-  private command: Command;
+export class ParameterNode extends SymbolNode {
+  private command: CommandNode;
   private repeatMarker_: ParserNode;
   private options: ParameterOptions;
 
@@ -450,7 +450,7 @@ export class Parameter extends SymbolNode {
     return this.options.required || false;
   }
 
-  constructor (command: Command, name: string, options?: ParameterOptions) {
+  constructor (command: CommandNode, name: string, options?: ParameterOptions) {
     super(name);
     this.command = command;
     this.options = options || {};
