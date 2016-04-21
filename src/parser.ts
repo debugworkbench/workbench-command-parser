@@ -416,40 +416,30 @@ export interface ParameterOptions {
 }
 
 export class Parameter extends SymbolNode {
-  private parameterKind_: ParameterKind = ParameterKind.Simple;
-  private help: string;
   private command: Command;
-  private repeatable_: boolean = false;
   private repeatMarker_: ParserNode;
-  private required_: boolean = false;
+  private options: ParameterOptions;
+
+  public get help (): string {
+    return this.options.help;
+  }
 
   public get parameterKind (): ParameterKind {
-    return this.parameterKind_;
+    return this.options.parameterKind || ParameterKind.Simple;
   }
 
   public get repeatable (): boolean {
-    return this.repeatable_;
+    return this.options.repeatable || false;
   }
 
   public get required (): boolean {
-    return this.required_;
+    return this.options.required || false;
   }
 
   constructor (command: Command, name: string, options?: ParameterOptions) {
     super(name);
     this.command = command;
-    if (options) {
-      if (options.parameterKind !== undefined) {
-        this.parameterKind_ = options.parameterKind;
-      }
-      if (options.repeatable !== undefined) {
-        this.repeatable_ = options.repeatable;
-      }
-      if (options.required !== undefined) {
-        this.required_ = options.required;
-      }
-      this.help = options.help;
-    }
+    this.options = options || {};
     this.command.addSuccessor(this);
     this.command.addParameter(this);
   }
