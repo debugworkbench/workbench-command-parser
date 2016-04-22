@@ -5,9 +5,9 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc -p src",
-    "docs": "./node_modules/typedoc/bin/typedoc --mode modules --out docs --target es6 src/*.ts",
-    "lint": "./node_modules/tslint/bin/tslint  -c conf/tslint.json src/*.ts test/*.ts",
-    "test": "tsc -p src && tsc -p test && ./node_modules/mocha/bin/mocha"
+    "docs": "typedoc --mode modules --out docs --target es6 src/*.ts",
+    "lint": "tslint  -c conf/tslint.json src/*.ts test/*.ts",
+    "test": "tsc -p src && tsc -p test && mocha"
   },
   "repository": {
     "type": "git",
