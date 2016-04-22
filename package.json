@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc -p src",
+    "clean": "rimraf lib docs tests/*.js tests/*.map tests/*.d.ts",
     "docs": "typedoc --mode modules --out docs --target es6 src/*.ts",
     "lint": "tslint  -c conf/tslint.json src/*.ts test/*.ts",
     "test": "tsc -p src && tsc -p test && mocha"
@@ -22,6 +23,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
+    "rimraf": "^2.5.2",
     "tslint": "^3.7.4",
     "typedoc": "^0.3.12",
     "typescript": "^1.8.10"
