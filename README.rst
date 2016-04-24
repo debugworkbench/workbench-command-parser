@@ -1,7 +1,7 @@
-Workbench Commands
-==================
+Workbench Command Parser
+========================
 
-.. image:: https://travis-ci.org/debugworkbench/workbench-commands.svg?branch=master
-    :target: https://travis-ci.org/debugworkbench/workbench-commands
+.. image:: https://travis-ci.org/debugworkbench/workbench-command-parser.svg?branch=master
+    :target: https://travis-ci.org/debugworkbench/workbench-command-parser
 
-A system for defining command-driven interfaces.
+A command parser.

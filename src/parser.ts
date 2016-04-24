@@ -15,16 +15,24 @@ export class CommandParser {
   }
 
   /**
-   * Called when a CommandNode has been accepted.
+   * Called when a [[CommandNode]] has been accepted.
+   *
+   * @private
    */
   pushCommand (command: CommandNode): void {
     this.commands.push(command);
   }
 
+  /**
+   * @private
+   */
   nodeSeen (node: ParserNode): boolean {
     return this.nodes.indexOf(node) >= 0;
   }
 
+  /**
+   * @private
+   */
   pushNode (token: CommandToken, node: ParserNode): void {
     this.currentNode = node;
     this.nodes.push(node);
@@ -36,7 +44,9 @@ export class CommandParser {
   }
 
   /**
-   * Called when a ParameterNode has been accepted.
+   * Called when a [[ParameterNode]] has been accepted.
+   *
+   * @private
    */
   pushParameter (param: ParameterNode, value: any): any {
     if (param.repeatable) {
@@ -165,7 +175,7 @@ export class Completion {
  * used as-is, whereas INCOMPLETE options are not valid values.
  */
 export class CompletionOption {
-  /** Initialized by makeCompletion. */
+  /** Initialized by [[makeCompletion]]. */
   completion: Completion;
   /** String for this option. */
   optionString: string;
@@ -262,20 +272,20 @@ export function longestCommonPrefix(options: string[]): string {
  * so the graph can be treated like a DAG when repeatable nodes
  * are ignored or visited only once.
  *
- * Each node represents one command token.
+ * Each [[ParserNode|node]] represents one [[CommandToken|command token]].
  *
  * Important operations:
  *
- *  Matching allows the parser to check if a given node is
- *  a valid partial or complete word for this node.
+ * * Matching allows the parser to check if a given node is
+ *   a valid partial or complete word for this node.
  *
- *  Completion allows the parser to generate possible
- *  words for a node. The parser may provide a partial token
- *  to limit and direct completion.
+ * * Completion allows the parser to generate possible
+ *   words for a node. The parser may provide a partial token
+ *   to limit and direct completion.
  *
- *  Accepting happens when the parser accepts a token for
- *  a node. During this, parameters add their values and
- *  commands install their handlers.
+ * * Accepting happens when the parser accepts a token for
+ *   a node. During this, parameters add their values and
+ *   commands install their handlers.
  */
 export class ParserNode {
   /** Possible successor nodes (collected while building). */
@@ -297,6 +307,9 @@ export class ParserNode {
     return "No help.";
   }
 
+  /**
+   * @private
+   */
   toString (): string {
     return '[ParserNode]';
   }
@@ -368,6 +381,9 @@ export class ParserNode {
  * May not be completed or matched.
  */
 export class RootNode extends ParserNode {
+  /**
+   * @private
+   */
   toString (): string {
     return '[RootNode]';
   }
@@ -394,6 +410,9 @@ export class SymbolNode extends ParserNode {
     this.symbol = symbol;
   }
 
+  /**
+   * @private
+   */
   toString (): string {
     return '[SymbolNode: ' + this.symbol + ']';
   }
@@ -439,6 +458,9 @@ export class CommandNode extends SymbolNode {
     this.handler = handler;
   }
 
+  /**
+   * @private
+   */
   toString (): string {
     return '[Command: ' + this.symbol + ']';
   }
@@ -456,10 +478,16 @@ export class CommandNode extends SymbolNode {
                           });
   }
 
+  /**
+   * @private
+   */
   addParameter (parameter: ParameterNode): void {
     this.parameters_.push(parameter);
   }
 
+  /**
+   * @private
+   */
   execute (parser: CommandParser): void {
     this.handler(parser);
   }

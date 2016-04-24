@@ -1,7 +1,7 @@
 {
-  "name": "workbench-commands",
+  "name": "workbench-command-parser",
   "version": "0.1.0",
-  "description": "A command interface library for building browser-based CLIs.",
+  "description": "A library providing a command parser.",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc -p src",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/debug-workbench/workbench-commands/"
+    "url": "https://github.com/debug-workbench/workbench-command-parser/"
   },
   "keywords": [
     "CLI",

@@ -70,6 +70,9 @@ export interface CommandSource {
 }
 
 export class CommandStringSource implements CommandSource {
+  /**
+   * @private
+   */
   text: string;
 
   constructor (text: string) {
