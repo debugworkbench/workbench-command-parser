@@ -83,8 +83,9 @@ describe('Tokenizer Tests:', () => {
             const s = new Parser.SymbolNode('show');
             s.addSuccessor(new Parser.CommandNode('interface', showInterface));
             r.addSuccessor(s);
-            const p = new Parser.CommandParser(r);
-            const tokens = new CommandStringSource('show interface').tokenize();
+            const source = new CommandStringSource('show interface');
+            const p = new Parser.CommandParser(source, r);
+            const tokens = source.tokenize();
             p.parse(tokens);
             p.execute();
             expect(handlerRan).to.be.true;

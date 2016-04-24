@@ -48,7 +48,8 @@ describe('Parser Tests:', () => {
   describe('SymbolNode', () => {
     it('can be matched against', () => {
       const node = new Parser.SymbolNode('help');
-      const parser = new Parser.CommandParser(node);
+      const src = new Tokenizer.CommandStringSource('');
+      const parser = new Parser.CommandParser(src, node);
       expect(node.match(parser, makeToken('he'))).to.be.true;
       expect(node.match(parser, makeToken('help'))).to.be.true;
       expect(node.match(parser, makeToken('helpe'))).to.be.false;
@@ -88,12 +89,14 @@ describe('Parser Tests:', () => {
   describe('The CommandParser', () => {
     it('errors when executing with no commands', () => {
       const n = new Parser.ParserNode();
-      const p = new Parser.CommandParser(n);
+      const s = new Tokenizer.CommandStringSource('');
+      const p = new Parser.CommandParser(s, n);
       expect(p.execute.bind(p)).to.throw('No command.');
     });
     it('is not valid when no command accepted', () => {
       const n = new Parser.ParserNode();
-      const p = new Parser.CommandParser(n);
+      const s = new Tokenizer.CommandStringSource('');
+      const p = new Parser.CommandParser(s, n);
       let errors: Array<string> = [];
       expect(p.verify(errors)).to.be.false;
       expect(errors).to.deep.equal(['Incomplete command.']);
@@ -107,9 +110,14 @@ describe('Parser Tests:', () => {
       const s = new Parser.SymbolNode('show');
       s.addSuccessor(new Parser.CommandNode('interface', showInterface));
       r.addSuccessor(s);
-      const p = new Parser.CommandParser(r);
-      p.advance(makeToken('show'));
-      p.advance(makeToken('interface'));
+      const src = new Tokenizer.CommandStringSource('show interface');
+      const p = new Parser.CommandParser(src, r);
+      const ts = src.tokenize();
+      for (let t of ts) {
+        if (t.tokenType === Tokenizer.TokenType.Word) {
+          p.advance(t);
+        }
+      }
       let errors: Array<string> = [];
       expect(p.verify(errors)).to.be.true;
       expect(errors).to.deep.equal([]);
@@ -118,14 +126,16 @@ describe('Parser Tests:', () => {
     });
     it('can handle an unset parameter name', () => {
       const n = new Parser.ParserNode();
-      const p = new Parser.CommandParser(n);
+      const s = new Tokenizer.CommandStringSource('');
+      const p = new Parser.CommandParser(s, n);
       expect(p.getParameter('none')).to.be.undefined;
       expect(p.getParameter('none', true)).to.be.true;
     });
     it('can remember parameter values', () => {
       const n = new Parser.ParserNode();
       const c = new Parser.CommandNode('test', nullCommandHandler);
-      const p = new Parser.CommandParser(n);
+      const s = new Tokenizer.CommandStringSource('');
+      const p = new Parser.CommandParser(s, n);
       const paramA = new Parser.ParameterNode(c, 'a');
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.equal('A');
@@ -137,7 +147,8 @@ describe('Parser Tests:', () => {
     it('can handle repeatable parameters', () => {
       const n = new Parser.ParserNode();
       const c = new Parser.CommandNode('test', nullCommandHandler);
-      const p = new Parser.CommandParser(n);
+      const s = new Tokenizer.CommandStringSource('');
+      const p = new Parser.CommandParser(s, n);
       const paramA = new Parser.ParameterNode(c, 'a', { repeatable: true });
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.deep.equal(['A']);

@@ -9,7 +9,8 @@ export class CommandParser {
   private commands: CommandNode[] = [];
   private parameters: Map<string, any> = new Map();
 
-  constructor (initialNode: ParserNode) {
+  constructor (source: CommandSource, initialNode: ParserNode) {
+    this.source = source;
     this.initialNode = initialNode;
     this.currentNode = this.initialNode;
   }
