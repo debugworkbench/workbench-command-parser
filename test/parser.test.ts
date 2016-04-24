@@ -36,12 +36,12 @@ describe('Parser Tests:', () => {
   describe('ParserNode', () => {
     it('manages successors', () => {
       const node = new Parser.ParserNode();
-      expect(node.successors.length).to.equals(0);
+      expect(node.successors.length).to.equal(0);
       const succ = new Parser.ParserNode();
       node.addSuccessor(succ);
-      expect(node.successors.length).to.equals(1);
-      expect(node.successors[0]).to.equals(succ);
-      expect(succ.successors.length).to.equals(0);
+      expect(node.successors.length).to.equal(1);
+      expect(node.successors[0]).to.equal(succ);
+      expect(succ.successors.length).to.equal(0);
     });
   });
 
@@ -73,15 +73,15 @@ describe('Parser Tests:', () => {
     it('has no successors by default', () => {
       const node = new Parser.ParserNode();
       const wrapper = new Parser.WrapperNode('help', node);
-      expect(wrapper.successors.length).to.equals(0);
+      expect(wrapper.successors.length).to.equal(0);
     });
     it('mirrors the successors of the wrapped node', () => {
       const node = new Parser.ParserNode();
       const succ = new Parser.ParserNode();
       node.addSuccessor(succ);
       const wrapper = new Parser.WrapperNode('help', node);
-      expect(wrapper.successors.length).to.equals(1);
-      expect(wrapper.successors[0]).to.equals(succ);
+      expect(wrapper.successors.length).to.equal(1);
+      expect(wrapper.successors[0]).to.equal(succ);
     });
   });
 
@@ -128,11 +128,11 @@ describe('Parser Tests:', () => {
       const p = new Parser.CommandParser(n);
       const paramA = new Parser.ParameterNode(c, 'a');
       p.pushParameter(paramA, 'A');
-      expect(p.getParameter('a')).to.equals('A');
+      expect(p.getParameter('a')).to.equal('A');
       const paramB = new Parser.ParameterNode(c, 'b');
       p.pushParameter(paramB, 'B');
-      expect(p.getParameter('a')).to.equals('A');
-      expect(p.getParameter('b')).to.equals('B');
+      expect(p.getParameter('a')).to.equal('A');
+      expect(p.getParameter('b')).to.equal('B');
     });
     it('can handle repeatable parameters', () => {
       const n = new Parser.ParserNode();
