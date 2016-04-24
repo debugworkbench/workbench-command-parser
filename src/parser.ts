@@ -199,7 +199,7 @@ export interface CompletionConfig {
 /**
  * Construct a completion result.
  */
-function makeCompletion(node: ParserNode, token: CommandToken, options: CompletionConfig): Completion {
+export function makeCompletion(node: ParserNode, token: CommandToken, options: CompletionConfig): Completion {
   var completion = new Completion();
   completion.node = node;
   completion.token = token;

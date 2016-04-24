@@ -17,6 +17,7 @@
     "files": [
         "./parser.ts",
         "./tokenizer.ts",
+        "./nodes.ts",
         "./index.ts"
     ]
 }
