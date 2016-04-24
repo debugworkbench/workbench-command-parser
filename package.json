@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p src",
     "clean": "rimraf lib docs tests/*.js tests/*.map tests/*.d.ts",
-    "docs": "typedoc --mode modules --out docs --target es6 src/*.ts",
+    "docs": "typedoc --mode file --out docs --target es6 src/*.ts",
     "lint": "tslint  -c conf/tslint.json src/*.ts test/*.ts",
     "test": "tsc -p src && tsc -p test && mocha"
   },
