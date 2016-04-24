@@ -14,6 +14,9 @@ export class CommandParser {
     this.currentNode = this.initialNode;
   }
 
+  /**
+   * Called when a CommandNode has been accepted.
+   */
   pushCommand (command: CommandNode): void {
     this.commands.push(command);
   }
@@ -32,6 +35,9 @@ export class CommandParser {
     return this.parameters.get(name) || defaultValue;
   }
 
+  /**
+   * Called when a ParameterNode has been accepted.
+   */
   pushParameter (param: ParameterNode, value: any): any {
     if (param.repeatable) {
       var list = this.parameters.get(param.name) || [];
@@ -43,6 +49,9 @@ export class CommandParser {
     return value;
   }
 
+  /**
+   * Perform completion on the current parser state.
+   */
   complete (token?: CommandToken): Completion[] {
     var completions = this.currentNode.possibleCompletions(this, token);
     var completionForNode = (node: ParserNode): Completion => {
@@ -51,6 +60,11 @@ export class CommandParser {
     return completions.map(completionForNode);
   }
 
+  /**
+   * Parse the given token sequence.
+   *
+   * Iterates over tokens and performs our regular phrase parse.
+   */
   parse (tokens: CommandToken[]): void {
     tokens.forEach(token => {
       if (token.tokenType !== TokenType.Whitespace) {
@@ -59,6 +73,9 @@ export class CommandParser {
     });
   }
 
+  /**
+   * Advance the parser by one step.
+   */
   advance (token: CommandToken): void {
     var possibleMatches = this.currentNode.matchingSuccessors(this, token);
     // Deal with command priorities.
@@ -73,6 +90,14 @@ export class CommandParser {
     }
   }
 
+  /**
+   * Execute the parsed command.
+   *
+   * This will call the OUTERMOST handler.
+   *
+   * XXX: We should expose a next-handler somehow so that we can
+   *      have wrapper commands like "with-log $logfile $command".
+   */
   execute (): void {
     if (this.commands.length > 0) {
       var command = this.commands[this.commands.length - 1];
@@ -82,6 +107,9 @@ export class CommandParser {
     }
   }
 
+  /**
+   * Verify the parsed command.
+   */
   verify (errorAccumulator: Array<string>): boolean {
     if (this.commands.length > 0) {
       const command = this.commands[this.commands.length - 1];
@@ -109,18 +137,39 @@ export enum NodePriority {
   Default = 0
 }
 
+/**
+ * Represents the result of completing a node,
+ * possibly hinted by a pre-existing token.
+ */
 export class Completion {
+  /** Node the completion was performed for. */
   node: ParserNode;
+  /** Value placeholder for help. */
   helpSymbol: string;
+  /** Main help text. */
   helpText: string;
+  /** Token used to hint the completion, if provided. */
   token: CommandToken;
+  /** Was this completion exhaustive? If yes, then only the
+      given completion options are valid. */
   exhaustive: boolean = false;
+  /** Actual completion options. */
   options: CompletionOption[];
 }
 
+/**
+ * Represents a single option returned by completion.
+ *
+ * An option may be COMPLETE, which means that it represents
+ * a syntactically complete parameter value which can be
+ * used as-is, whereas INCOMPLETE options are not valid values.
+ */
 export class CompletionOption {
+  /** Initialized by makeCompletion. */
   completion: Completion;
+  /** String for this option. */
   optionString: string;
+  /** True if this option is COMPLETE. */
   complete: boolean = false;
 
   constructor (completion: Completion, optionString: string, complete: boolean) {
@@ -136,10 +185,14 @@ export interface CompletionConfig {
   otherOptions?: string[];
 }
 
+/**
+ * Construct a completion result.
+ */
 function makeCompletion(node: ParserNode, token: CommandToken, options: CompletionConfig): Completion {
   var completion = new Completion();
   completion.node = node;
   completion.token = token;
+  // Get node help strings.
   completion.helpSymbol = node.helpSymbol();
   completion.helpText = node.helpText();
   if (options.exhaustive === undefined) {
@@ -149,7 +202,9 @@ function makeCompletion(node: ParserNode, token: CommandToken, options: Completi
   }
   var completeOptions = options.completeOptions || [];
   var otherOptions = options.otherOptions || [];
+  // Apply token restrictions.
   if (token) {
+    // Filter options using token.
     completeOptions = completeOptions.filter((option): boolean => {
       // POLYFILL: No String.startsWith.
       return option.lastIndexOf(token.text) === 0;
@@ -166,6 +221,8 @@ function makeCompletion(node: ParserNode, token: CommandToken, options: Completi
       }
     }
   }
+  // Add longest common prefix as an incomplete option, but
+  // filter it against the existing options and the token.
   var allOptions = completeOptions.concat(otherOptions);
   var lcp = longestCommonPrefix(allOptions);
   if (lcp && allOptions.indexOf(lcp) === -1) {
@@ -221,8 +278,11 @@ export function longestCommonPrefix(options: string[]): string {
  *  commands install their handlers.
  */
 export class ParserNode {
+  /** Possible successor nodes (collected while building). */
   protected successors_: ParserNode[] = [];
+  /** Match and completion priority. */
   protected priority_: NodePriority = NodePriority.Default;
+  /** Hidden nodes are not completed. */
   protected hidden_: boolean = false;
 
   public get successors (): ParserNode[] {
@@ -278,7 +338,14 @@ export class ParserNode {
     return false === parser.nodeSeen(this);
   }
 
+  /**
+   * Called by the parser to get possible completions so
+   * that the parser needn't have access to the internal
+   * state of the node.
+   */
   possibleCompletions (parser: CommandParser, token?: CommandToken): ParserNode[] {
+    // Filter out hidden nodes, non-acceptable nodes and, if there is a token,
+    // filter with that as well.
     return this.successors.filter(node => {
       return !node.hidden_ && node.acceptable(parser) && (!token || node.match(parser, token));
     });
@@ -356,8 +423,11 @@ export class SymbolNode extends ParserNode {
  * Commands are symbols with a handler and parameter requirements.
  */
 export class CommandNode extends SymbolNode {
+  /** Help source for the command. */
   private help: string;
+  /** Handler function. */
   private handler: Function;
+  /** Parameters (collected while building). */
   private parameters_: ParameterNode[] = [];
 
   public get parameters (): ParameterNode[] {
@@ -416,6 +486,9 @@ export class WrapperNode extends CommandNode {
   }
 }
 
+/**
+ * Syntactical kinds of parameters.
+ */
 export enum ParameterKind {
   Flag,
   Named,
@@ -429,6 +502,9 @@ export interface ParameterOptions {
   required?: boolean;
 }
 
+/**
+ * A captured parameter.
+ */
 export class ParameterNode extends SymbolNode {
   private command: CommandNode;
   private repeatMarker_: ParserNode;
@@ -462,6 +538,11 @@ export class ParameterNode extends SymbolNode {
     return this.symbol;
   }
 
+  /**
+   * Parameters have the successors of their command, in addition to their own.
+   *
+   * This is what allows having several parameters.
+   */
   public get successors (): ParserNode[] {
     if (this.command) {
       return this.command.successors.concat(this.successors_);
@@ -482,18 +563,37 @@ export class ParameterNode extends SymbolNode {
     return this.help || "Parameter";
   }
 
+  /**
+   * Parameters can be converted to values.
+   *
+   * By default, they convert to simple strings.
+   */
   convert (parser: CommandParser, token: CommandToken): any {
     return token.text;
   }
 
+  /**
+   * Parameters complete only to themselves.
+   */
   complete (parser: CommandParser, token?: CommandToken): Completion {
     return makeCompletion(this, token, { exhaustive: true });
   }
 
+  /**
+   * Parameters get registered as such when accepted.
+   */
   accept (parser: CommandParser, token: CommandToken): void {
     parser.pushParameter(this, this.convert(parser, token));
   }
 
+  /**
+   * Is the node acceptable as the next node in the given parser state?
+   *
+   * This prevents non-repeatable parameters from being added again.
+   *
+   * Note how we also check for the repeatMarker of the node for cases
+   * where another node can preclude our occurrence.
+   */
   acceptable (parser: CommandParser): boolean {
     if (this.repeatable) {
       return true;
