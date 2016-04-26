@@ -10,7 +10,14 @@
     "clean": "rimraf lib docs test/build",
     "docs": "typedoc --mode file --readme src/index.md --out docs --target es6 src/*.ts",
     "lint": "tslint  -c conf/tslint.json src/*.ts test/*.ts",
-    "test": "npm run build && mocha test/build"
+    "test": "npm run build && mocha test/build",
+    "watch": "npm-watch"
+  },
+  "watch": {
+    "test": {
+      "patterns": ["src/*.ts", "test/src/*.ts"],
+      "extensions": "ts"
+    }
   },
   "repository": {
     "type": "git",
@@ -25,6 +32,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
+    "npm-watch": "^0.1.4",
     "rimraf": "^2.5.2",
     "tslint": "^3.7.4",
     "typedoc": "^0.3.12",
