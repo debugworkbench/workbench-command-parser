@@ -3,6 +3,4 @@ docs
 lib
 node_modules
 npm-debug.log
-test/*.d.ts
-test/*.js
-test/*.js.map
+test/build

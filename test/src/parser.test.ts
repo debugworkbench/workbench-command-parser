@@ -1,5 +1,5 @@
-import * as Parser from '../lib/parser';
-import * as Tokenizer from '../lib/tokenizer';
+import * as Parser from '../../lib/parser';
+import * as Tokenizer from '../../lib/tokenizer';
 import { expect } from 'chai';
 
 const makeToken = (text: string): Tokenizer.CommandToken => {

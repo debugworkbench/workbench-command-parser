@@ -1,6 +1,7 @@
 {
     "version": "1.4.1",
     "compilerOptions": {
+      "outDir": "../build",
       "target": "es6",
       "module": "commonjs",
       "declaration": true,
@@ -14,8 +15,8 @@
         "!./node_modules/**/*.ts"
     ],
     "files": [
-        "../typings/main.d.ts",
-        "./parser.test.ts",
-        "./tokenizer.test.ts"
+        "../../typings/main.d.ts",
+        "parser.test.ts",
+        "tokenizer.test.ts"
     ]
 }

@@ -4,11 +4,13 @@
   "description": "A library providing a command parser.",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc -p src",
-    "clean": "rimraf lib docs test/*.js test/*.map test/*.d.ts",
+    "build:src": "tsc -p src",
+    "build:test": "tsc -p test/src",
+    "build": "npm run build:src && npm run build:test",
+    "clean": "rimraf lib docs test/build",
     "docs": "typedoc --mode file --readme src/index.md --out docs --target es6 src/*.ts",
     "lint": "tslint  -c conf/tslint.json src/*.ts test/*.ts",
-    "test": "tsc -p src && tsc -p test && mocha"
+    "test": "npm run build && mocha test/build"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
-import * as Parser from '../lib/parser';
-import { CommandStringSource, CommandToken, TokenType } from '../lib/tokenizer';
+import * as Parser from '../../lib/parser';
+import { CommandStringSource, CommandToken, TokenType } from '../../lib/tokenizer';
 import { expect } from 'chai';
 
 function tokenize (text: string): CommandToken[] {
