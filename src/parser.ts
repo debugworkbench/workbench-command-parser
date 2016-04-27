@@ -396,12 +396,12 @@ export class RootNode extends ParserNode {
  *
  * Used to build commands and parameter prefixes.
  */
-export abstract class SymbolNode extends ParserNode {
-  protected symbol: string;
+export class SymbolNode extends ParserNode {
+  private symbol_: string;
 
   constructor (symbol: string) {
     super();
-    this.symbol = symbol;
+    this.symbol_ = symbol;
   }
 
   /**
@@ -409,6 +409,10 @@ export abstract class SymbolNode extends ParserNode {
    */
   toString (): string {
     return '[SymbolNode: ' + this.symbol + ']';
+  }
+
+  public get symbol (): string {
+    return this.symbol_;
   }
 
   public helpSymbol (): string {

@@ -35,7 +35,7 @@ describe('Parser Tests:', () => {
 
   describe('ParserNode', () => {
     it('manages successors', () => {
-      const node = new Parser.CommandNode('show', null);
+      const node = new Parser.SymbolNode('show');
       expect(node.successors.length).to.equal(0);
       const succ = new Parser.CommandNode('interface', null);
       node.addSuccessor(succ);
@@ -48,7 +48,7 @@ describe('Parser Tests:', () => {
   describe('SymbolNode', () => {
     it('can be matched against', () => {
       const root = new Parser.RootNode();
-      const node = new Parser.CommandNode('help', null);
+      const node = new Parser.SymbolNode('help');
       root.addSuccessor(node);
       const parser = new Parser.CommandParser('', root);
       expect(node.match(parser, makeToken('he'))).to.be.true;
@@ -76,7 +76,7 @@ describe('Parser Tests:', () => {
       expect(wrapper.successors.length).to.equal(0);
     });
     it('mirrors the successors of the wrapped node', () => {
-      const node = new Parser.CommandNode('show', null);
+      const node = new Parser.SymbolNode('show');
       const succ = new Parser.CommandNode('interface', null);
       node.addSuccessor(succ);
       const wrapper = new Parser.WrapperNode('help', node);
@@ -104,7 +104,7 @@ describe('Parser Tests:', () => {
         handlerRan = true;
       };
       const r = new Parser.RootNode();
-      const s = new Parser.CommandNode('show', null);
+      const s = new Parser.SymbolNode('show');
       s.addSuccessor(new Parser.CommandNode('interface', showInterface));
       r.addSuccessor(s);
       const commandText = 'show interface';
