@@ -1,3 +1,18 @@
+/**
+ * A tokenizer for command strings. This handles processing double quotes, including
+ * escaped double quotes within a string.
+ *
+ * To use this module:
+ *
+ * ```
+ * import { tokenize } from 'workbench-command-parser/tokenizer';
+ * const tokens = tokenize('help show interface');
+ * ```
+ */
+
+/**
+ * A position within a string.
+ */
 export class SourceOffset {
   char: number;
   line: number;
@@ -10,6 +25,9 @@ export class SourceOffset {
   }
 }
 
+/**
+ * A range within a string.
+ */
 export class SourceLocation {
   startOffset: SourceOffset;
   endOffset: SourceOffset;
@@ -21,12 +39,23 @@ export class SourceLocation {
   }
 }
 
+/**
+ *
+ */
 export enum TokenType {
+  /** Internal usage only. @private */
   Invalid,
+  /** The token of type `Whitespace` represents whitespace and not a word. */
   Whitespace,
+  /** The token of type `Word` represents a word within the string. This
+      takes double quotes into account */
   Word
 }
 
+/**
+ * A token from the source string. It will either represent a word within
+ * the string or whitespace.
+ */
 export class CommandToken {
   private text_: string;
   private tokenType_: TokenType;
@@ -38,14 +67,23 @@ export class CommandToken {
     this.location_ = location;
   }
 
+  /**
+   * The text of the token.
+   */
   public get text (): string {
     return this.text_;
   }
 
+  /**
+   * The type of the token.
+   */
   public get tokenType (): TokenType {
     return this.tokenType_;
   }
 
+  /**
+   * The location of the token within the source string.
+   */
   public get location (): SourceLocation {
     return this.location_;
   }
@@ -61,6 +99,10 @@ enum State {
   WordBackslash
 }
 
+/**
+ * Given a command string, return the list of tokens that make up
+ * the contents of that string.
+ */
 export function tokenize (text: string): CommandToken[] {
   var tokens: CommandToken[] = [];
 
