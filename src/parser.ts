@@ -263,8 +263,8 @@ export function longestCommonPrefix(options: string[]): string {
  *
  * These form a digraph with circles through their SUCCESSORS
  * field. Cycles can only occur through nodes that are REPEATABLE,
- * so the graph can be treated like a DAG when repeatable nodes
- * are ignored or visited only once.
+ * so the graph can be treated like a DAG when
+ * [[RepeatableNode|repeatable nodes]] are ignored or visited only once.
  *
  * Each [[ParserNode|node]] represents one [[CommandToken|command token]].
  *
@@ -507,11 +507,62 @@ export class WrapperNode extends CommandNode {
   }
 }
 
-export class ParameterNameNode extends SymbolNode {
+/**
+ * A node that can be repeated. This is used by
+ * [[ParameterNameNode]] and [[ParameterNode]] which
+ * can optionally be present multiple times for a command.
+ *
+ * If [[RepeatableNode.repeatable|repeatable]] is true, then
+ * the node can be [[ParserNode.accept|accepted]] multiple times.
+ *
+ * If a [[RepeatableNode.repeatMarker|repeatMarker]] is specified,
+ * then once this marker node has been accepted, this node will
+ * no longer be acceptable.
+ */
+export class RepeatableNode extends SymbolNode {
+  private repeatable_: boolean = false;
+  private repeatMarker_: ParserNode;
+
+  constructor (name: string, repeatable: boolean, repeatMarker: ParserNode) {
+    super(name);
+    this.repeatable_ = repeatable;
+    this.repeatMarker_ = repeatMarker;
+  }
+
+  public get repeatable (): boolean {
+    return this.repeatable_ || false;
+  }
+
+  public get repeatMarker (): ParserNode {
+    return this.repeatMarker_;
+  }
+
+  /**
+   * Is the node acceptable as the next node in the given parser state?
+   *
+   * This prevents non-repeatable parameters from being added again.
+   *
+   * Note how we also check for the repeatMarker of the node for cases
+   * where another node can preclude our occurrence.
+   */
+  acceptable (parser: CommandParser): boolean {
+    if (this.repeatable) {
+      return true;
+    } else {
+      // If we haven't been seen, but we have a repeat marker,
+      // and that marker hasn't been seen, then we're acceptable.
+      return !parser.nodeSeen(this) &&
+             ((this.repeatMarker === undefined) ||
+              (!parser.nodeSeen(this.repeatMarker)));
+    }
+  }
+}
+
+export class ParameterNameNode extends RepeatableNode {
   private parameter: ParameterNode;
 
-  constructor (name: string, parameter: ParameterNode, options: any) {
-    super(name);
+  constructor (name: string, parameter: ParameterNode, options: ParameterOptions) {
+    super(name, options.repeatable || false, options.repeatMarker);
     this.parameter = parameter;
   }
 
@@ -544,7 +595,7 @@ export interface ParameterOptions {
 /**
  * A captured parameter.
  */
-export class ParameterNode extends SymbolNode {
+export class ParameterNode extends RepeatableNode {
   private command: CommandNode;
   private parameterKind_: ParameterKind;
   private options: ParameterOptions;
@@ -557,23 +608,16 @@ export class ParameterNode extends SymbolNode {
     return this.parameterKind_;
   }
 
-  public get repeatable (): boolean {
-    return this.options.repeatable || false;
-  }
-
-  public get repeatMarker (): ParserNode {
-    return this.options.repeatMarker;
-  }
-
   public get required (): boolean {
     return this.options.required || false;
   }
 
   constructor (command: CommandNode, name: string, kind: ParameterKind, options?: ParameterOptions) {
-    super(name);
+    options = options || {};
+    super(name, options.repeatable || false, options.repeatMarker);
     this.command = command;
     this.parameterKind_ = kind;
-    this.options = options || {};
+    this.options = options;
   }
 
   public get name (): string {
@@ -626,25 +670,5 @@ export class ParameterNode extends SymbolNode {
    */
   accept (parser: CommandParser, token: CommandToken): void {
     parser.pushParameter(this, this.convert(parser, token));
-  }
-
-  /**
-   * Is the node acceptable as the next node in the given parser state?
-   *
-   * This prevents non-repeatable parameters from being added again.
-   *
-   * Note how we also check for the repeatMarker of the node for cases
-   * where another node can preclude our occurrence.
-   */
-  acceptable (parser: CommandParser): boolean {
-    if (this.repeatable) {
-      return true;
-    } else {
-      // If we haven't been seen, but we have a repeat marker,
-      // and that marker hasn't been seen, then we're acceptable.
-      return !parser.nodeSeen(this) &&
-             ((this.repeatMarker === undefined) ||
-              (!parser.nodeSeen(this.repeatMarker)));
-    }
   }
 }
