@@ -507,6 +507,23 @@ export class WrapperNode extends CommandNode {
   }
 }
 
+export class ParameterNameNode extends SymbolNode {
+  private parameter: ParameterNode;
+
+  constructor (name: string, parameter: ParameterNode, options: any) {
+    super(name);
+    this.parameter = parameter;
+  }
+
+  public helpSymbol (): string {
+    return this.symbol + this.parameter.helpSymbol();
+  }
+
+  public helpText (): string {
+    return this.parameter.helpText();
+  }
+}
+
 /**
  * Syntactical kinds of parameters.
  */
