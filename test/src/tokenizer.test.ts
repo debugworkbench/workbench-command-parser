@@ -73,7 +73,7 @@ describe('Tokenizer Tests:', () => {
                 handlerRan = true;
             };
             const r = new Parser.RootNode();
-            const s = new Parser.SymbolNode('show');
+            const s = new Parser.CommandNode('show', null);
             s.addSuccessor(new Parser.CommandNode('interface', showInterface));
             r.addSuccessor(s);
             const commandText = 'show interface';

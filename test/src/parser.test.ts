@@ -33,9 +33,9 @@ describe('Parser Tests:', () => {
 
   describe('ParserNode', () => {
     it('manages successors', () => {
-      const node = new Parser.ParserNode();
+      const node = new Parser.CommandNode('show', null);
       expect(node.successors.length).to.equal(0);
-      const succ = new Parser.ParserNode();
+      const succ = new Parser.CommandNode('interface', null);
       node.addSuccessor(succ);
       expect(node.successors.length).to.equal(1);
       expect(node.successors[0]).to.equal(succ);
@@ -46,7 +46,7 @@ describe('Parser Tests:', () => {
   describe('SymbolNode', () => {
     it('can be matched against', () => {
       const root = new Parser.RootNode();
-      const node = new Parser.SymbolNode('help');
+      const node = new Parser.CommandNode('help', null);
       root.addSuccessor(node);
       const parser = new Parser.CommandParser('', root);
       expect(node.match(parser, makeToken('he'))).to.be.true;
@@ -61,23 +61,21 @@ describe('Parser Tests:', () => {
       const command = new Parser.CommandNode('test', nullCommandHandler);
       const parameterP = new Parser.ParameterNode(command, 'p');
       const parameterQ = new Parser.ParameterNode(command, 'q');
-      const node = new Parser.ParserNode();
-      parameterP.addSuccessor(node);
       expect(command.successors).to.deep.equal([parameterP, parameterQ]);
-      expect(parameterP.successors).to.deep.equal([parameterP, parameterQ, node]);
+      expect(parameterP.successors).to.deep.equal([parameterP, parameterQ]);
       expect(parameterQ.successors).to.deep.equal([parameterP, parameterQ]);
     });
   });
 
   describe('WrapperNode', () => {
     it('has no successors by default', () => {
-      const node = new Parser.ParserNode();
+      const node = new Parser.CommandNode('show', null);
       const wrapper = new Parser.WrapperNode('help', node);
       expect(wrapper.successors.length).to.equal(0);
     });
     it('mirrors the successors of the wrapped node', () => {
-      const node = new Parser.ParserNode();
-      const succ = new Parser.ParserNode();
+      const node = new Parser.CommandNode('show', null);
+      const succ = new Parser.CommandNode('interface', null);
       node.addSuccessor(succ);
       const wrapper = new Parser.WrapperNode('help', node);
       expect(wrapper.successors.length).to.equal(1);
@@ -104,7 +102,7 @@ describe('Parser Tests:', () => {
         handlerRan = true;
       };
       const r = new Parser.RootNode();
-      const s = new Parser.SymbolNode('show');
+      const s = new Parser.CommandNode('show', null);
       s.addSuccessor(new Parser.CommandNode('interface', showInterface));
       r.addSuccessor(s);
       const commandText = 'show interface';

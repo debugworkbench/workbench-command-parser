@@ -288,7 +288,7 @@ export function longestCommonPrefix(options: string[]): string {
  *   a node. During this, parameters add their values and
  *   commands install their handlers.
  */
-export class ParserNode {
+export abstract class ParserNode {
   /** Possible successor nodes (collected while building). */
   protected successors_: ParserNode[] = [];
   /** Match and completion priority. */
@@ -403,7 +403,7 @@ export class RootNode extends ParserNode {
  *
  * Used to build commands and parameter prefixes.
  */
-export class SymbolNode extends ParserNode {
+export abstract class SymbolNode extends ParserNode {
   protected symbol: string;
 
   constructor (symbol: string) {
