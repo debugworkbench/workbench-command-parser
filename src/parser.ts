@@ -166,6 +166,52 @@ export class Completion {
   exhaustive: boolean = false;
   /** Actual completion options. */
   options: CompletionOption[];
+
+  constructor (node: ParserNode, token: CommandToken, options: CompletionConfig) {
+    this.node = node;
+    this.token = token;
+    // Get node help strings.
+    this.helpSymbol = node.helpSymbol();
+    this.helpText = node.helpText();
+    if (options.exhaustive === undefined) {
+      this.exhaustive = options.exhaustive;
+    } else {
+      this.exhaustive = false;
+    }
+    var completeOptions = options.completeOptions || [];
+    var otherOptions = options.otherOptions || [];
+    // Apply token restrictions.
+    if (token) {
+      // Filter options using token.
+      completeOptions = completeOptions.filter((option): boolean => {
+        return option.startsWith(token.text);
+      });
+      otherOptions = otherOptions.filter((option): boolean => {
+        return option.startsWith(token.text);
+      });
+      if (!this.exhaustive) {
+        // If not exhaustive, then add the current token as an incomplete option.
+        if ((completeOptions.indexOf(token.text) === -1) &&
+            (otherOptions.indexOf(token.text) === -1)) {
+          otherOptions.push(token.text);
+        }
+      }
+    }
+    // Add longest common prefix as an incomplete option, but
+    // filter it against the existing options and the token.
+    var allOptions = completeOptions.concat(otherOptions);
+    var lcp = longestCommonPrefix(allOptions);
+    if (lcp && allOptions.indexOf(lcp) === -1) {
+      if (!token || (lcp !== token.text)) {
+        otherOptions.push(lcp);
+      }
+    }
+    this.options = completeOptions.map((optionString): CompletionOption => {
+      return new CompletionOption(this, optionString, true);
+    }).concat(otherOptions.map((optionString): CompletionOption => {
+      return new CompletionOption(this, optionString, false);
+    }));
+  }
 }
 
 /**
@@ -176,7 +222,7 @@ export class Completion {
  * used as-is, whereas INCOMPLETE options are not valid values.
  */
 export class CompletionOption {
-  /** Initialized by [[makeCompletion]]. */
+  /** Initialized by [[Completion.constructor]]. */
   completion: Completion;
   /** String for this option. */
   optionString: string;
@@ -194,57 +240,6 @@ export interface CompletionConfig {
   exhaustive: boolean;
   completeOptions?: string[];
   otherOptions?: string[];
-}
-
-/**
- * Construct a completion result.
- */
-export function makeCompletion(node: ParserNode, token: CommandToken, options: CompletionConfig): Completion {
-  var completion = new Completion();
-  completion.node = node;
-  completion.token = token;
-  // Get node help strings.
-  completion.helpSymbol = node.helpSymbol();
-  completion.helpText = node.helpText();
-  if (options.exhaustive === undefined) {
-    completion.exhaustive = options.exhaustive;
-  } else {
-    completion.exhaustive = false;
-  }
-  var completeOptions = options.completeOptions || [];
-  var otherOptions = options.otherOptions || [];
-  // Apply token restrictions.
-  if (token) {
-    // Filter options using token.
-    completeOptions = completeOptions.filter((option): boolean => {
-      return option.startsWith(token.text);
-    });
-    otherOptions = otherOptions.filter((option): boolean => {
-      return option.startsWith(token.text);
-    });
-    if (!completion.exhaustive) {
-      // If not exhaustive, then add the current token as an incomplete option.
-      if ((completeOptions.indexOf(token.text) === -1) &&
-          (otherOptions.indexOf(token.text) === -1)) {
-        otherOptions.push(token.text);
-      }
-    }
-  }
-  // Add longest common prefix as an incomplete option, but
-  // filter it against the existing options and the token.
-  var allOptions = completeOptions.concat(otherOptions);
-  var lcp = longestCommonPrefix(allOptions);
-  if (lcp && allOptions.indexOf(lcp) === -1) {
-    if (!token || (lcp !== token.text)) {
-      otherOptions.push(lcp);
-    }
-  }
-  completion.options = completeOptions.map((optionString): CompletionOption => {
-    return new CompletionOption(completion, optionString, true);
-  }).concat(otherOptions.map((optionString): CompletionOption => {
-    return new CompletionOption(completion, optionString, false);
-  }));
-  return completion;
 }
 
 export function longestCommonPrefix(options: string[]): string {
@@ -319,7 +314,7 @@ export abstract class ParserNode {
    * May or may not be provided a partial token.
    */
   complete (parser: CommandParser, token?: CommandToken): Completion {
-    return makeCompletion(this, token, { exhaustive: true });
+    return new Completion(this, token, { exhaustive: true });
   }
 
   /**
@@ -425,7 +420,7 @@ export abstract class SymbolNode extends ParserNode {
   }
 
   complete (parser: CommandParser, token?: CommandToken): Completion {
-    return makeCompletion(this, token, {
+    return new Completion(this, token, {
                             exhaustive: true,
                             completeOptions: [this.symbol]
                           });
@@ -470,7 +465,7 @@ export class CommandNode extends SymbolNode {
   }
 
   complete (parser: CommandParser, token?: CommandToken): Completion {
-    return makeCompletion(this, token, {
+    return new Completion(this, token, {
                             exhaustive: true,
                             completeOptions: [this.symbol]
                           });
@@ -602,7 +597,7 @@ export class ParameterNode extends SymbolNode {
    * Parameters complete only to themselves.
    */
   complete (parser: CommandParser, token?: CommandToken): Completion {
-    return makeCompletion(this, token, { exhaustive: true });
+    return new Completion(this, token, { exhaustive: true });
   }
 
   /**

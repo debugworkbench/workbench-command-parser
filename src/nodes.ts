@@ -1,4 +1,4 @@
-import { CommandParser, Completion, makeCompletion, ParameterNode, ParserNode } from './parser';
+import { CommandParser, Completion, ParameterNode, ParserNode } from './parser';
 import { CommandToken } from './tokenizer';
 
 /**
@@ -30,7 +30,7 @@ export class FlagNode extends ParameterNode {
    * Parameters complete only to themselves.
    */
   complete (parser: CommandParser, token?: CommandToken): Completion {
-    return makeCompletion(this, token, {
+    return new Completion(this, token, {
                             exhaustive: true,
                             completeOptions: [this.symbol]
                           });
