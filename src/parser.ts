@@ -217,12 +217,10 @@ export function makeCompletion(node: ParserNode, token: CommandToken, options: C
   if (token) {
     // Filter options using token.
     completeOptions = completeOptions.filter((option): boolean => {
-      // POLYFILL: No String.startsWith.
-      return option.lastIndexOf(token.text) === 0;
+      return option.startsWith(token.text);
     });
     otherOptions = otherOptions.filter((option): boolean => {
-      // POLYFILL: No String.startsWith.
-      return option.lastIndexOf(token.text) === 0;
+      return option.startsWith(token.text);
     });
     if (!completion.exhaustive) {
       // If not exhaustive, then add the current token as an incomplete option.
@@ -434,8 +432,7 @@ export abstract class SymbolNode extends ParserNode {
   }
 
   match (parse: CommandParser, token: CommandToken): boolean {
-    // POLYFILL: No String.startsWith.
-    return this.symbol.lastIndexOf(token.text) === 0;
+    return this.symbol.startsWith(token.text);
   }
 }
 
