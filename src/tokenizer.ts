@@ -208,7 +208,3 @@ export function tokenize (text: string): CommandToken[] {
 
   return tokens;
 }
-
-export function annotate (text: string, location: SourceLocation): string {
-  return "";
-}
