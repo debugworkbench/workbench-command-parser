@@ -534,8 +534,10 @@ export enum ParameterKind {
 }
 
 export interface ParameterOptions {
+  aliases?: Array<string>;
   help?: string;
   repeatable?: boolean;
+  repeatMarker?: ParserNode;
   required?: boolean;
 }
 
@@ -545,7 +547,6 @@ export interface ParameterOptions {
 export class ParameterNode extends SymbolNode {
   private command: CommandNode;
   private parameterKind_: ParameterKind;
-  private repeatMarker_: ParserNode;
   private options: ParameterOptions;
 
   public get help (): string {
@@ -560,6 +561,10 @@ export class ParameterNode extends SymbolNode {
     return this.options.repeatable || false;
   }
 
+  public get repeatMarker (): ParserNode {
+    return this.options.repeatMarker;
+  }
+
   public get required (): boolean {
     return this.options.required || false;
   }
@@ -569,8 +574,6 @@ export class ParameterNode extends SymbolNode {
     this.command = command;
     this.parameterKind_ = kind;
     this.options = options || {};
-    this.command.addSuccessor(this);
-    this.command.addParameter(this);
   }
 
   public get name (): string {
@@ -640,8 +643,8 @@ export class ParameterNode extends SymbolNode {
       // If we haven't been seen, but we have a repeat marker,
       // and that marker hasn't been seen, then we're acceptable.
       return !parser.nodeSeen(this) &&
-             ((this.repeatMarker_ === undefined) ||
-              (!parser.nodeSeen(this.repeatMarker_)));
+             ((this.repeatMarker === undefined) ||
+              (!parser.nodeSeen(this.repeatMarker)));
     }
   }
 }
