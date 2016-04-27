@@ -1,11 +1,6 @@
 import * as Parser from '../../lib/parser';
-import { CommandStringSource, CommandToken, TokenType } from '../../lib/tokenizer';
+import { tokenize, CommandToken, TokenType } from '../../lib/tokenizer';
 import { expect } from 'chai';
-
-function tokenize (text: string): CommandToken[] {
-  const source = new CommandStringSource(text);
-  return source.tokenize();
-}
 
 function validateToken (token: CommandToken, text: string, tokenType: TokenType, start: number, end: number) {
   expect(token.text).to.equals(text);
@@ -81,9 +76,9 @@ describe('Tokenizer Tests:', () => {
             const s = new Parser.SymbolNode('show');
             s.addSuccessor(new Parser.CommandNode('interface', showInterface));
             r.addSuccessor(s);
-            const source = new CommandStringSource('show interface');
-            const p = new Parser.CommandParser(source, r);
-            const tokens = source.tokenize();
+            const commandText = 'show interface';
+            const p = new Parser.CommandParser(commandText, r);
+            const tokens = tokenize(commandText);
             p.parse(tokens);
             p.execute();
             expect(handlerRan).to.be.true;

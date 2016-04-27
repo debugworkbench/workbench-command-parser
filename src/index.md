@@ -11,17 +11,15 @@ this command tree and re-use it with each instance of the
 Basic Usage
 -----------
 
-* Construct a [[CommandSource]] with some input.
-* Construct a [[CommandParser]] with a [[RootNode]].
+* Construct a [[CommandParser]] with input and a [[RootNode]].
 * Tokenize the input.
 * Parse the command.
 * Verify the parsed command.
 * Execute the parsed command.
 
 ```
-const source = new CommandStringSource(input);
-const parser = new CommandParser(source, rootNode);
-const tokens = source.tokenize();
+const parser = new CommandParser(input, rootNode);
+const tokens = tokenize(input);
 parser.parse(tokens);
 let errors: Array<string> = [];
 if (parser.verify(errors)) {

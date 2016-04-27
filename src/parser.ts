@@ -1,7 +1,7 @@
-import { CommandSource, CommandToken, TokenType } from './tokenizer';
+import { tokenize, CommandToken, TokenType } from './tokenizer';
 
 export class CommandParser {
-  private source: CommandSource;
+  private source: string;
   private initialNode: ParserNode;
   private currentNode: ParserNode;
   private nodes: ParserNode[] = [];
@@ -9,7 +9,7 @@ export class CommandParser {
   private commands: CommandNode[] = [];
   private parameters: Map<string, any> = new Map();
 
-  constructor (source: CommandSource, initialNode: ParserNode) {
+  constructor (source: string, initialNode: ParserNode) {
     this.source = source;
     this.initialNode = initialNode;
     this.currentNode = this.initialNode;
