@@ -45,8 +45,10 @@ describe('Parser Tests:', () => {
 
   describe('SymbolNode', () => {
     it('can be matched against', () => {
+      const root = new Parser.RootNode();
       const node = new Parser.SymbolNode('help');
-      const parser = new Parser.CommandParser('', node);
+      root.addSuccessor(node);
+      const parser = new Parser.CommandParser('', root);
       expect(node.match(parser, makeToken('he'))).to.be.true;
       expect(node.match(parser, makeToken('help'))).to.be.true;
       expect(node.match(parser, makeToken('helpe'))).to.be.false;
@@ -85,13 +87,13 @@ describe('Parser Tests:', () => {
 
   describe('The CommandParser', () => {
     it('errors when executing with no commands', () => {
-      const n = new Parser.ParserNode();
-      const p = new Parser.CommandParser('', n);
+      const r = new Parser.RootNode();
+      const p = new Parser.CommandParser('', r);
       expect(p.execute.bind(p)).to.throw('No command.');
     });
     it('is not valid when no command accepted', () => {
-      const n = new Parser.ParserNode();
-      const p = new Parser.CommandParser('', n);
+      const r = new Parser.RootNode();
+      const p = new Parser.CommandParser('', r);
       let errors: Array<string> = [];
       expect(p.verify(errors)).to.be.false;
       expect(errors).to.deep.equal(['Incomplete command.']);
@@ -120,15 +122,15 @@ describe('Parser Tests:', () => {
       expect(handlerRan).to.be.true;
     });
     it('can handle an unset parameter name', () => {
-      const n = new Parser.ParserNode();
-      const p = new Parser.CommandParser('', n);
+      const r = new Parser.RootNode();
+      const p = new Parser.CommandParser('', r);
       expect(p.getParameter('none')).to.be.undefined;
       expect(p.getParameter('none', true)).to.be.true;
     });
     it('can remember parameter values', () => {
-      const n = new Parser.ParserNode();
+      const r = new Parser.RootNode();
       const c = new Parser.CommandNode('test', nullCommandHandler);
-      const p = new Parser.CommandParser('', n);
+      const p = new Parser.CommandParser('', r);
       const paramA = new Parser.ParameterNode(c, 'a');
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.equal('A');
@@ -138,9 +140,9 @@ describe('Parser Tests:', () => {
       expect(p.getParameter('b')).to.equal('B');
     });
     it('can handle repeatable parameters', () => {
-      const n = new Parser.ParserNode();
+      const r = new Parser.RootNode();
       const c = new Parser.CommandNode('test', nullCommandHandler);
-      const p = new Parser.CommandParser('', n);
+      const p = new Parser.CommandParser('', r);
       const paramA = new Parser.ParameterNode(c, 'a', { repeatable: true });
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.deep.equal(['A']);
