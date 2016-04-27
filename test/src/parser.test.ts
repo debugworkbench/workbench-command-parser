@@ -1,4 +1,5 @@
 import * as Parser from '../../lib/parser';
+import { ParameterKind } from '../../lib/parser';
 import * as Tokenizer from '../../lib/tokenizer';
 import { expect } from 'chai';
 
@@ -59,8 +60,8 @@ describe('Parser Tests:', () => {
   describe('Parameter', () => {
     it('includes the command as a successor', () => {
       const command = new Parser.CommandNode('test', nullCommandHandler);
-      const parameterP = new Parser.ParameterNode(command, 'p');
-      const parameterQ = new Parser.ParameterNode(command, 'q');
+      const parameterP = new Parser.ParameterNode(command, 'p', ParameterKind.Simple);
+      const parameterQ = new Parser.ParameterNode(command, 'q', ParameterKind.Simple);
       expect(command.successors).to.deep.equal([parameterP, parameterQ]);
       expect(parameterP.successors).to.deep.equal([parameterP, parameterQ]);
       expect(parameterQ.successors).to.deep.equal([parameterP, parameterQ]);
@@ -129,10 +130,10 @@ describe('Parser Tests:', () => {
       const r = new Parser.RootNode();
       const c = new Parser.CommandNode('test', nullCommandHandler);
       const p = new Parser.CommandParser('', r);
-      const paramA = new Parser.ParameterNode(c, 'a');
+      const paramA = new Parser.ParameterNode(c, 'a', ParameterKind.Simple);
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.equal('A');
-      const paramB = new Parser.ParameterNode(c, 'b');
+      const paramB = new Parser.ParameterNode(c, 'b', ParameterKind.Simple);
       p.pushParameter(paramB, 'B');
       expect(p.getParameter('a')).to.equal('A');
       expect(p.getParameter('b')).to.equal('B');
@@ -141,7 +142,7 @@ describe('Parser Tests:', () => {
       const r = new Parser.RootNode();
       const c = new Parser.CommandNode('test', nullCommandHandler);
       const p = new Parser.CommandParser('', r);
-      const paramA = new Parser.ParameterNode(c, 'a', { repeatable: true });
+      const paramA = new Parser.ParameterNode(c, 'a', ParameterKind.Simple, { repeatable: true });
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.deep.equal(['A']);
       p.pushParameter(paramA, 'B');

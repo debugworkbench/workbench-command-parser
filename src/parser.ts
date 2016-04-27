@@ -517,7 +517,6 @@ export enum ParameterKind {
 }
 
 export interface ParameterOptions {
-  parameterKind?: ParameterKind;
   help?: string;
   repeatable?: boolean;
   required?: boolean;
@@ -528,6 +527,7 @@ export interface ParameterOptions {
  */
 export class ParameterNode extends SymbolNode {
   private command: CommandNode;
+  private parameterKind_: ParameterKind;
   private repeatMarker_: ParserNode;
   private options: ParameterOptions;
 
@@ -536,7 +536,7 @@ export class ParameterNode extends SymbolNode {
   }
 
   public get parameterKind (): ParameterKind {
-    return this.options.parameterKind || ParameterKind.Simple;
+    return this.parameterKind_;
   }
 
   public get repeatable (): boolean {
@@ -547,9 +547,10 @@ export class ParameterNode extends SymbolNode {
     return this.options.required || false;
   }
 
-  constructor (command: CommandNode, name: string, options?: ParameterOptions) {
+  constructor (command: CommandNode, name: string, kind: ParameterKind, options?: ParameterOptions) {
     super(name);
     this.command = command;
+    this.parameterKind_ = kind;
     this.options = options || {};
     this.command.addSuccessor(this);
     this.command.addParameter(this);
