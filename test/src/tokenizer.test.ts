@@ -1,4 +1,4 @@
-import * as Builder from '../../lib/builder';
+import { buildCommand } from '../../lib/builder';
 import * as Parser from '../../lib/parser';
 import { tokenize, CommandToken, TokenType } from '../../lib/tokenizer';
 import { expect } from 'chai';
@@ -74,7 +74,7 @@ describe('Tokenizer Tests:', () => {
                 handlerRan = true;
             };
             const r = new Parser.RootNode();
-            Builder.buildCommand(r, {
+            buildCommand(r, {
                 'name': 'show interface',
                 'handler': showInterface
             });

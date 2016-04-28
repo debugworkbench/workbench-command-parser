@@ -1,4 +1,4 @@
-import * as Builder from '../../lib/builder';
+import { buildCommand } from '../../lib/builder';
 import * as Parser from '../../lib/parser';
 import * as Tokenizer from '../../lib/tokenizer';
 import { expect } from 'chai';
@@ -60,7 +60,7 @@ describe('Parser Tests:', () => {
   describe('Parameter', () => {
     it('includes the command as a successor', () => {
       const r = new Parser.RootNode();
-      const command = Builder.buildCommand(r, {
+      const command = buildCommand(r, {
         'name': 'test',
         'handler': nullCommandHandler,
         'parameters': [
@@ -131,7 +131,7 @@ describe('Parser Tests:', () => {
         handlerRan = true;
       };
       const r = new Parser.RootNode();
-      Builder.buildCommand(r, {
+      buildCommand(r, {
         'name': 'show interface',
         'handler': showInterface
       });
@@ -157,7 +157,7 @@ describe('Parser Tests:', () => {
     });
     it('can remember parameter values', () => {
       const r = new Parser.RootNode();
-      const c = Builder.buildCommand(r, {
+      const c = buildCommand(r, {
         'name': 'show',
         'handler': nullCommandHandler,
         'parameters': [
@@ -182,7 +182,7 @@ describe('Parser Tests:', () => {
     });
     it('can handle repeatable parameters', () => {
       const r = new Parser.RootNode();
-      const c = Builder.buildCommand(r, {
+      const c = buildCommand(r, {
         'name': 'test',
         'handler': nullCommandHandler,
         'parameters': [
