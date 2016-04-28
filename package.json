@@ -16,8 +16,12 @@
   },
   "watch": {
     "test": {
-      "patterns": ["src/*.ts", "test/src/*.ts",
-                   "src/tsconfig.json", "test/src/tsconfig.json"],
+      "patterns": [
+        "src/*.ts",
+        "test/src/*.ts",
+        "src/tsconfig.json",
+        "test/src/tsconfig.json"
+      ],
       "extensions": "ts"
     }
   },
