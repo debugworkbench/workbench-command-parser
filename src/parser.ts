@@ -97,7 +97,7 @@ export class CommandParser {
     } else if (possibleMatches.length === 0) {
       throw(new Error('At node ' + this.currentNode + ': No matches for "' + token.text + '"'));
     } else {
-      throw("Ambiguous match.");
+      throw('At node ' + this.currentNode + ': Ambiguous match: ' + possibleMatches);
     }
   }
 
