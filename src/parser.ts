@@ -399,9 +399,9 @@ export class RootNode extends ParserNode {
 export class SymbolNode extends ParserNode {
   private symbol_: string;
 
-  constructor (symbol: string) {
+  constructor (config: SymbolNodeConfig) {
     super();
-    this.symbol_ = symbol;
+    this.symbol_ = config.name;
   }
 
   /**
@@ -435,6 +435,37 @@ export class SymbolNode extends ParserNode {
   }
 }
 
+export interface SymbolNodeConfig {
+  name: string;
+}
+
+export interface CommandNodeConfig extends SymbolNodeConfig {
+  help?: string;
+  handler: Function;
+  parameters?: Array<ParameterNodeConfig>
+}
+
+export interface RepeatableNodeConfig extends SymbolNodeConfig {
+  repeatable?: boolean;
+  repeatMarker?: ParserNode;
+}
+
+export interface ParameterNameNodeConfig extends RepeatableNodeConfig {
+  parameter: ParameterNode;
+}
+
+export interface ParameterNodeConfig extends RepeatableNodeConfig {
+  aliases?: Array<string>;
+  command?: CommandNode;
+  help?: string;
+  parameterKind?: ParameterKind;
+  required?: boolean;
+}
+
+export interface WrapperNodeConfig extends CommandNodeConfig {
+  wrappedRoot: ParserNode;
+}
+
 /**
  * Commands are symbols with a handler and parameter requirements.
  */
@@ -450,9 +481,14 @@ export class CommandNode extends SymbolNode {
     return this.parameters_;
   }
 
-  constructor (name: string, handler: Function) {
-    super(name);
-    this.handler = handler;
+  constructor (config: CommandNodeConfig) {
+    super(config);
+    this.help = config.help;
+    this.handler = config.handler;
+  }
+
+  getParameterNode (name: string): ParameterNode {
+    return this.parameters.find((p) => p.name === name);
   }
 
   /**
@@ -501,9 +537,9 @@ export class CommandNode extends SymbolNode {
 export class WrapperNode extends CommandNode {
   private root: ParserNode;
 
-  constructor (symbol: string, root: ParserNode) {
-    super(symbol, undefined);
-    this.root = root;
+  constructor (config: WrapperNodeConfig) {
+    super(config);
+    this.root = config.wrappedRoot;
   }
 
   public get successors (): ParserNode[] {
@@ -527,10 +563,10 @@ export class RepeatableNode extends SymbolNode {
   private repeatable_: boolean = false;
   private repeatMarker_: ParserNode;
 
-  constructor (name: string, repeatable: boolean, repeatMarker: ParserNode) {
-    super(name);
-    this.repeatable_ = repeatable;
-    this.repeatMarker_ = repeatMarker;
+  constructor (config: RepeatableNodeConfig) {
+    super(config);
+    this.repeatable_ = config.repeatable;
+    this.repeatMarker_ = config.repeatMarker;
   }
 
   public get repeatable (): boolean {
@@ -565,9 +601,9 @@ export class RepeatableNode extends SymbolNode {
 export class ParameterNameNode extends RepeatableNode {
   private parameter: ParameterNode;
 
-  constructor (name: string, parameter: ParameterNode, options: ParameterOptions) {
-    super(name, options.repeatable || false, options.repeatMarker);
-    this.parameter = parameter;
+  constructor (config: ParameterNameNodeConfig) {
+    super(config);
+    this.parameter = config.parameter;
   }
 
   public helpSymbol (): string {
@@ -588,24 +624,17 @@ export enum ParameterKind {
   Simple
 }
 
-export interface ParameterOptions {
-  aliases?: Array<string>;
-  help?: string;
-  repeatable?: boolean;
-  repeatMarker?: ParserNode;
-  required?: boolean;
-}
-
 /**
  * A captured parameter.
  */
 export class ParameterNode extends RepeatableNode {
   private command: CommandNode;
+  private help_: string;
   private parameterKind_: ParameterKind;
-  private options: ParameterOptions;
+  private required_: boolean;
 
   public get help (): string {
-    return this.options.help;
+    return this.help_;
   }
 
   public get parameterKind (): ParameterKind {
@@ -613,15 +642,15 @@ export class ParameterNode extends RepeatableNode {
   }
 
   public get required (): boolean {
-    return this.options.required || false;
+    return this.required_;
   }
 
-  constructor (command: CommandNode, name: string, kind: ParameterKind, options?: ParameterOptions) {
-    options = options || {};
-    super(name, options.repeatable || false, options.repeatMarker);
-    this.command = command;
-    this.parameterKind_ = kind;
-    this.options = options;
+  constructor (config: ParameterNodeConfig) {
+    super(config);
+    this.command = config.command;
+    this.help_ = config.help;
+    this.parameterKind_ = config.parameterKind;
+    this.required_ = config.required || false;
   }
 
   public get name (): string {

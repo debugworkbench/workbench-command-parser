@@ -35,9 +35,9 @@ describe('Parser Tests:', () => {
 
   describe('ParserNode', () => {
     it('manages successors', () => {
-      const node = new Parser.SymbolNode('show');
+      const node = new Parser.SymbolNode({'name': 'show'});
       expect(node.successors.length).to.equal(0);
-      const succ = new Parser.CommandNode('interface', null);
+      const succ = new Parser.SymbolNode({'name': 'interface'});
       node.addSuccessor(succ);
       expect(node.successors.length).to.equal(1);
       expect(node.successors[0]).to.equal(succ);
@@ -48,7 +48,7 @@ describe('Parser Tests:', () => {
   describe('SymbolNode', () => {
     it('can be matched against', () => {
       const root = new Parser.RootNode();
-      const node = new Parser.SymbolNode('help');
+      const node = new Parser.SymbolNode({'name': 'help'});
       root.addSuccessor(node);
       const parser = new Parser.CommandParser('', root);
       expect(node.match(parser, makeToken('he'))).to.be.true;
@@ -60,9 +60,23 @@ describe('Parser Tests:', () => {
 
   describe('Parameter', () => {
     it('includes the command as a successor', () => {
-      const command = new Parser.CommandNode('test', nullCommandHandler);
-      const parameterP = Builder.buildSimpleParameter(command, 'p', ParameterKind.Simple);
-      const parameterQ = Builder.buildSimpleParameter(command, 'q', ParameterKind.Simple);
+      const r = new Parser.RootNode();
+      const command = Builder.buildCommand(r, {
+        'name': 'test',
+        'handler': nullCommandHandler,
+        'parameters': [
+          {
+            'name': 'p',
+            'parameterKind': ParameterKind.Simple
+          },
+          {
+            'name': 'q',
+            'parameterKind': ParameterKind.Simple
+          }
+        ]
+      });
+      const parameterP = command.getParameterNode('p');
+      const parameterQ = command.getParameterNode('q');
       expect(command.successors).to.deep.equal([parameterP, parameterQ]);
       expect(parameterP.successors).to.deep.equal([parameterP, parameterQ]);
       expect(parameterQ.successors).to.deep.equal([parameterP, parameterQ]);
@@ -71,15 +85,29 @@ describe('Parser Tests:', () => {
 
   describe('WrapperNode', () => {
     it('has no successors by default', () => {
-      const node = new Parser.CommandNode('show', null);
-      const wrapper = new Parser.WrapperNode('help', node);
+      const node = new Parser.CommandNode({
+        'name': 'show',
+        'handler': null
+      });
+      const wrapper = new Parser.WrapperNode({
+        'name': 'help',
+        'handler': null,
+        'wrappedRoot': node
+      });
       expect(wrapper.successors.length).to.equal(0);
     });
     it('mirrors the successors of the wrapped node', () => {
-      const node = new Parser.SymbolNode('show');
-      const succ = new Parser.CommandNode('interface', null);
+      const node = new Parser.SymbolNode({'name': 'show'});
+      const succ = new Parser.CommandNode({
+        'name': 'interface',
+        'handler': null
+      });
       node.addSuccessor(succ);
-      const wrapper = new Parser.WrapperNode('help', node);
+      const wrapper = new Parser.WrapperNode({
+        'name': 'help',
+        'handler': null,
+        'wrappedRoot': node
+      });
       expect(wrapper.successors.length).to.equal(1);
       expect(wrapper.successors[0]).to.equal(succ);
     });
@@ -104,9 +132,10 @@ describe('Parser Tests:', () => {
         handlerRan = true;
       };
       const r = new Parser.RootNode();
-      const s = new Parser.SymbolNode('show');
-      s.addSuccessor(new Parser.CommandNode('interface', showInterface));
-      r.addSuccessor(s);
+      Builder.buildCommand(r, {
+        'name': 'show interface',
+        'handler': showInterface
+      });
       const commandText = 'show interface';
       const p = new Parser.CommandParser(commandText, r);
       const ts = Tokenizer.tokenize(commandText);
@@ -129,21 +158,44 @@ describe('Parser Tests:', () => {
     });
     it('can remember parameter values', () => {
       const r = new Parser.RootNode();
-      const c = new Parser.CommandNode('test', nullCommandHandler);
+      const c = Builder.buildCommand(r, {
+        'name': 'show',
+        'handler': nullCommandHandler,
+        'parameters': [
+          {
+            'name': 'a',
+            'parameterKind': ParameterKind.Simple
+          },
+          {
+            'name': 'b',
+            'parameterKind': ParameterKind.Simple
+          }
+        ]
+      });
+      const paramA = c.getParameterNode('a')
+      const paramB = c.getParameterNode('b');
       const p = new Parser.CommandParser('', r);
-      const paramA = Builder.buildSimpleParameter(c, 'a');
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.equal('A');
-      const paramB = Builder.buildSimpleParameter(c, 'b');
       p.pushParameter(paramB, 'B');
       expect(p.getParameter('a')).to.equal('A');
       expect(p.getParameter('b')).to.equal('B');
     });
     it('can handle repeatable parameters', () => {
       const r = new Parser.RootNode();
-      const c = new Parser.CommandNode('test', nullCommandHandler);
+      const c = Builder.buildCommand(r, {
+        'name': 'test',
+        'handler': nullCommandHandler,
+        'parameters': [
+          {
+            'name': 'a',
+            'parameterKind': ParameterKind.Simple,
+            'repeatable': true
+          }
+        ]
+      });
       const p = new Parser.CommandParser('', r);
-      const paramA = Builder.buildSimpleParameter(c, 'a', { repeatable: true });
+      const paramA = c.getParameterNode('a');
       p.pushParameter(paramA, 'A');
       expect(p.getParameter('a')).to.deep.equal(['A']);
       p.pushParameter(paramA, 'B');

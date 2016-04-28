@@ -1,3 +1,4 @@
+import * as Builder from '../../lib/builder';
 import * as Parser from '../../lib/parser';
 import { tokenize, CommandToken, TokenType } from '../../lib/tokenizer';
 import { expect } from 'chai';
@@ -73,9 +74,10 @@ describe('Tokenizer Tests:', () => {
                 handlerRan = true;
             };
             const r = new Parser.RootNode();
-            const s = new Parser.CommandNode('show', null);
-            s.addSuccessor(new Parser.CommandNode('interface', showInterface));
-            r.addSuccessor(s);
+            Builder.buildCommand(r, {
+                'name': 'show interface',
+                'handler': showInterface
+            });
             const commandText = 'show interface';
             const p = new Parser.CommandParser(commandText, r);
             const tokens = tokenize(commandText);
