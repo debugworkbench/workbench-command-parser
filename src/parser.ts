@@ -615,6 +615,13 @@ export class ParameterNameNode extends RepeatableNode {
   public helpText (): string {
     return this.parameter.helpText();
   }
+
+  /**
+   * @private
+   */
+  toString (): string {
+    return '[ParameterNameNode: ' + this.symbol + ']';
+  }
 }
 
 /**
@@ -653,6 +660,13 @@ export class ParameterNode extends RepeatableNode {
 
   public get name (): string {
     return this.symbol;
+  }
+
+  /**
+   * @private
+   */
+  toString (): string {
+    return '[ParameterNode: (' + this.kind + ') ' + this.symbol + ']';
   }
 
   /**
