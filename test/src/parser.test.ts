@@ -1,6 +1,5 @@
 import * as Builder from '../../lib/builder';
 import * as Parser from '../../lib/parser';
-import { ParameterKind } from '../../lib/parser';
 import * as Tokenizer from '../../lib/tokenizer';
 import { expect } from 'chai';
 
@@ -67,11 +66,11 @@ describe('Parser Tests:', () => {
         'parameters': [
           {
             'name': 'p',
-            'parameterKind': ParameterKind.Simple
+            'kind': 'simple'
           },
           {
             'name': 'q',
-            'parameterKind': ParameterKind.Simple
+            'kind': 'simple'
           }
         ]
       });
@@ -164,11 +163,11 @@ describe('Parser Tests:', () => {
         'parameters': [
           {
             'name': 'a',
-            'parameterKind': ParameterKind.Simple
+            'kind': 'simple'
           },
           {
             'name': 'b',
-            'parameterKind': ParameterKind.Simple
+            'kind': 'simple'
           }
         ]
       });
@@ -189,7 +188,7 @@ describe('Parser Tests:', () => {
         'parameters': [
           {
             'name': 'a',
-            'parameterKind': ParameterKind.Simple,
+            'kind': 'simple',
             'repeatable': true
           }
         ]

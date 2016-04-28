@@ -458,7 +458,7 @@ export interface ParameterNodeConfig extends RepeatableNodeConfig {
   aliases?: Array<string>;
   command?: CommandNode;
   help?: string;
-  parameterKind?: ParameterKind;
+  kind?: ParameterKind;
   required?: boolean;
 }
 
@@ -618,11 +618,7 @@ export class ParameterNameNode extends RepeatableNode {
 /**
  * Syntactical kinds of parameters.
  */
-export enum ParameterKind {
-  Flag,
-  Named,
-  Simple
-}
+export type ParameterKind = 'flag' | 'named' | 'simple';
 
 /**
  * A captured parameter.
@@ -630,15 +626,15 @@ export enum ParameterKind {
 export class ParameterNode extends RepeatableNode {
   private command: CommandNode;
   private help_: string;
-  private parameterKind_: ParameterKind;
+  private kind_: ParameterKind;
   private required_: boolean;
 
   public get help (): string {
     return this.help_;
   }
 
-  public get parameterKind (): ParameterKind {
-    return this.parameterKind_;
+  public get kind (): ParameterKind {
+    return this.kind_;
   }
 
   public get required (): boolean {
@@ -649,7 +645,7 @@ export class ParameterNode extends RepeatableNode {
     super(config);
     this.command = config.command;
     this.help_ = config.help;
-    this.parameterKind_ = config.parameterKind;
+    this.kind_ = config.kind;
     this.required_ = config.required || false;
   }
 

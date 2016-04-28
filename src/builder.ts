@@ -37,11 +37,11 @@ export function buildCommand (root: RootNode, config: CommandNodeConfig): Comman
   }
   if (config.parameters) {
     for (const p of config.parameters) {
-      if (p.parameterKind === ParameterKind.Flag) {
+      if (p.kind === 'flag') {
         buildFlagParameter(c, p);
-      } else if (p.parameterKind === ParameterKind.Simple) {
+      } else if (p.kind === 'simple') {
         buildSimpleParameter(c, p);
-      } else if (p.parameterKind === ParameterKind.Named) {
+      } else if (p.kind === 'named') {
         buildNamedParameter(c, p);
       }
     }
@@ -51,7 +51,7 @@ export function buildCommand (root: RootNode, config: CommandNodeConfig): Comman
 
 function buildFlagParameter (command: CommandNode, config: ParameterNodeConfig): ParameterNode {
   config.command = command;
-  config.parameterKind = ParameterKind.Flag;
+  config.kind = 'flag';
   const p = new FlagNode(config);
   command.addSuccessor(p);
   command.addParameter(p);
@@ -60,7 +60,7 @@ function buildFlagParameter (command: CommandNode, config: ParameterNodeConfig):
 
 function buildSimpleParameter (command: CommandNode, config: ParameterNodeConfig): ParameterNode {
   config.command = command;
-  config.parameterKind = ParameterKind.Simple;
+  config.kind = 'simple';
   const p = new StringParameterNode(config);
   command.addSuccessor(p);
   command.addParameter(p);
@@ -69,7 +69,7 @@ function buildSimpleParameter (command: CommandNode, config: ParameterNodeConfig
 
 function buildNamedParameter (command: CommandNode, config: ParameterNodeConfig): ParameterNode {
   config.command = command;
-  config.parameterKind = ParameterKind.Named;
+  config.kind = 'named';
   const p = new StringParameterNode(config);
   const n = new ParameterNameNode({
     'name': name,
