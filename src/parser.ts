@@ -442,6 +442,7 @@ export interface SymbolNodeConfig {
 export interface CommandNodeConfig extends SymbolNodeConfig {
   help?: string;
   handler: Function;
+  nodeConstructor?: typeof CommandNode;
   parameters?: Array<ParameterNodeConfig>
 }
 
@@ -459,6 +460,7 @@ export interface ParameterNodeConfig extends RepeatableNodeConfig {
   command?: CommandNode;
   help?: string;
   kind?: ParameterKind;
+  nodeConstructor?: typeof ParameterNode;
   required?: boolean;
 }
 

@@ -50,27 +50,30 @@ export function buildCommand (root: RootNode, config: CommandNodeConfig): Comman
 }
 
 function buildFlagParameter (command: CommandNode, config: ParameterNodeConfig): ParameterNode {
+  const nodeConstructor = config.nodeConstructor || FlagNode;
   config.command = command;
   config.kind = 'flag';
-  const p = new FlagNode(config);
+  const p = new nodeConstructor(config);
   command.addSuccessor(p);
   command.addParameter(p);
   return p;
 }
 
 function buildSimpleParameter (command: CommandNode, config: ParameterNodeConfig): ParameterNode {
+  const nodeConstructor = config.nodeConstructor || StringParameterNode;
   config.command = command;
   config.kind = 'simple';
-  const p = new StringParameterNode(config);
+  const p = new nodeConstructor(config);
   command.addSuccessor(p);
   command.addParameter(p);
   return p;
 }
 
 function buildNamedParameter (command: CommandNode, config: ParameterNodeConfig): ParameterNode {
+  const nodeConstructor = config.nodeConstructor || StringParameterNode;
   config.command = command;
   config.kind = 'named';
-  const p = new StringParameterNode(config);
+  const p = new nodeConstructor(config);
   const n = new ParameterNameNode({
     'name': name,
     'parameter': p,
