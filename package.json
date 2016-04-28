@@ -41,7 +41,7 @@
     "npm-watch": "^0.1.4",
     "rimraf": "^2.5.2",
     "tslint": "^3.7.4",
-    "typedoc": "^0.3.12",
+    "typedoc": "sierrasoftworks/typedoc#v1.8.10",
     "typescript": "^1.8.10"
   }
 }
