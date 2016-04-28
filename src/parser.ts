@@ -443,7 +443,7 @@ export interface CommandNodeConfig extends SymbolNodeConfig {
   help?: string;
   handler: Function;
   nodeConstructor?: typeof CommandNode;
-  parameters?: Array<ParameterNodeConfig>
+  parameters?: Array<ParameterNodeConfig>;
 }
 
 export interface RepeatableNodeConfig extends SymbolNodeConfig {

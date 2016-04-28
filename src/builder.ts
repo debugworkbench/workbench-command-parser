@@ -1,4 +1,8 @@
-import { CommandNode, CommandNodeConfig, ParameterKind, ParameterNameNode, ParameterNameNodeConfig, ParameterNode, ParameterNodeConfig, ParserNode, RootNode, SymbolNode } from './parser';
+import {
+    CommandNode, CommandNodeConfig, ParameterKind, ParameterNameNode,
+    ParameterNameNodeConfig, ParameterNode, ParameterNodeConfig,
+    ParserNode, RootNode, SymbolNode
+  } from './parser';
 import { FlagNode, StringParameterNode } from './nodes';
 import { tokenize, TokenType } from './tokenizer';
 
@@ -31,7 +35,7 @@ export function buildCommand (root: RootNode, config: CommandNodeConfig): Comman
     } else {
       const config = {
         'name': name
-      }
+      };
       cur = findOrMakeSuccessor(cur, name, () => new SymbolNode(config));
     }
   }
