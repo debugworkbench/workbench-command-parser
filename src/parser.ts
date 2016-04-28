@@ -704,6 +704,13 @@ export class ParameterNode extends RepeatableNode {
   }
 
   /**
+   * Parameters match any token by default.
+   */
+  match (parser: CommandParser, token: CommandToken): boolean {
+    return true;
+  }
+
+  /**
    * Parameters complete only to themselves.
    */
   complete (parser: CommandParser, token?: CommandToken): Completion {
