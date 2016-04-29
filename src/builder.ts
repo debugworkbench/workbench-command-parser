@@ -56,7 +56,6 @@ export function buildCommand (root: RootNode, config: CommandNodeConfig): Comman
 function buildFlagParameter (command: CommandNode, config: ParameterNodeConfig): ParameterNode {
   const nodeConstructor = config.nodeConstructor || FlagNode;
   config.command = command;
-  config.kind = 'flag';
   if (config.priority !== undefined) {
     // This is `Default` instead of `Parameter` so that if someone enters
     // the name of the flag parameter, it will have a higher priority
@@ -72,7 +71,6 @@ function buildFlagParameter (command: CommandNode, config: ParameterNodeConfig):
 function buildSimpleParameter (command: CommandNode, config: ParameterNodeConfig): ParameterNode {
   const nodeConstructor = config.nodeConstructor || StringParameterNode;
   config.command = command;
-  config.kind = 'simple';
   if (config.priority !== undefined) {
     config.priority = NodePriority.Parameter;
   }
@@ -85,7 +83,6 @@ function buildSimpleParameter (command: CommandNode, config: ParameterNodeConfig
 function buildNamedParameter (command: CommandNode, config: ParameterNodeConfig): ParameterNode {
   const nodeConstructor = config.nodeConstructor || StringParameterNode;
   config.command = command;
-  config.kind = 'named';
   if (config.priority !== undefined) {
     config.priority = NodePriority.Parameter;
   }
