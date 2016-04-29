@@ -42,6 +42,26 @@ describe('Parser Tests:', () => {
       expect(node.successors[0]).to.equal(succ);
       expect(succ.successors.length).to.equal(0);
     });
+    it('can match a hidden node', () => {
+      const root = new Parser.RootNode();
+      const node = new Parser.SymbolNode({
+        'hidden': true,
+        'name': 'help'
+      });
+      root.addSuccessor(node);
+      const parser = new Parser.CommandParser('', root);
+      expect(node.match(parser, makeToken('help'))).to.be.true;
+    });
+    it('does not consider hidden nodes for completion', () => {
+      const root = new Parser.RootNode();
+      const node = new Parser.SymbolNode({
+        'hidden': true,
+        'name': 'help'
+      });
+      root.addSuccessor(node);
+      const parser = new Parser.CommandParser('', root);
+      expect(root.possibleCompletions(parser, makeToken('help'))).to.be.empty;
+    });
   });
 
   describe('SymbolNode', () => {
