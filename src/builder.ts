@@ -1,7 +1,7 @@
 import {
-    CommandNode, CommandNodeConfig, ParameterKind, ParameterNameNode,
-    ParameterNameNodeConfig, ParameterNode, ParameterNodeConfig,
-    ParserNode, RootNode, SymbolNode
+    CommandNode, CommandNodeConfig, NodePriority, ParameterKind,
+    ParameterNameNode, ParameterNameNodeConfig, ParameterNode,
+    ParameterNodeConfig, ParserNode, RootNode, SymbolNode
   } from './parser';
 import { FlagNode, StringParameterNode } from './nodes';
 import { tokenize, TokenType } from './tokenizer';
@@ -57,6 +57,12 @@ function buildFlagParameter (command: CommandNode, config: ParameterNodeConfig):
   const nodeConstructor = config.nodeConstructor || FlagNode;
   config.command = command;
   config.kind = 'flag';
+  if (config.priority !== undefined) {
+    // This is `Default` instead of `Parameter` so that if someone enters
+    // the name of the flag parameter, it will have a higher priority
+    // than matching a simple parameter.
+    config.priority = NodePriority.Default;
+  }
   const p = new nodeConstructor(config);
   command.addSuccessor(p);
   command.addParameter(p);
@@ -67,6 +73,9 @@ function buildSimpleParameter (command: CommandNode, config: ParameterNodeConfig
   const nodeConstructor = config.nodeConstructor || StringParameterNode;
   config.command = command;
   config.kind = 'simple';
+  if (config.priority !== undefined) {
+    config.priority = NodePriority.Parameter;
+  }
   const p = new nodeConstructor(config);
   command.addSuccessor(p);
   command.addParameter(p);
@@ -77,6 +86,9 @@ function buildNamedParameter (command: CommandNode, config: ParameterNodeConfig)
   const nodeConstructor = config.nodeConstructor || StringParameterNode;
   config.command = command;
   config.kind = 'named';
+  if (config.priority !== undefined) {
+    config.priority = NodePriority.Parameter;
+  }
   const p = new nodeConstructor(config);
   const n = new ParameterNameNode({
     'name': config.name,

@@ -142,10 +142,10 @@ export class CommandParser {
   }
 }
 
-export enum NodePriority {
-  Minimum = -10000,
-  Parameter = -10,
-  Default = 0
+export class NodePriority {
+  static Minimum: number = -10000;
+  static Parameter: number = -10;
+  static Default: number = 0;
 }
 
 /**
@@ -285,9 +285,14 @@ export abstract class ParserNode {
   /** Possible successor nodes (collected while building). */
   protected successors_: ParserNode[] = [];
   /** Match and completion priority. */
-  protected priority_: NodePriority = NodePriority.Default;
+  protected priority_: number;
   /** Hidden nodes are not completed. */
-  protected hidden_: boolean = false;
+  protected hidden_: boolean;
+
+  constructor (config: SymbolNodeConfig) {
+    this.priority_ = config.priority || NodePriority.Default;
+    this.hidden_ = config.hidden || false;
+  }
 
   public get successors (): ParserNode[] {
     return this.successors_;
@@ -375,6 +380,10 @@ export abstract class ParserNode {
  * May not be completed or matched.
  */
 export class RootNode extends ParserNode {
+  constructor () {
+    super({'name': '__root__'});
+  }
+
   /**
    * @private
    */
@@ -400,7 +409,7 @@ export class SymbolNode extends ParserNode {
   private symbol_: string;
 
   constructor (config: SymbolNodeConfig) {
-    super();
+    super(config);
     this.symbol_ = config.name;
   }
 
@@ -435,7 +444,12 @@ export class SymbolNode extends ParserNode {
   }
 }
 
-export interface SymbolNodeConfig {
+export interface ParserNodeConfig {
+  hidden?: boolean;
+  priority?: number;
+}
+
+export interface SymbolNodeConfig extends ParserNodeConfig {
   name: string;
 }
 
