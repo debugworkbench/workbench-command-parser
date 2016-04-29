@@ -9,7 +9,7 @@
     "build": "npm run build:src && npm run build:test",
     "clean": "rimraf lib docs test/build",
     "docs": "typedoc --excludeNotExported --readme src/index.md --out docs --target es6 src/",
-    "lint": "tslint  -c conf/tslint.json src/*.ts test/*.ts",
+    "lint": "tslint  -c conf/tslint.json src/*.ts test/src/*.ts",
     "pretest": "npm run build",
     "test": "mocha test/build",
     "watch": "npm-watch"

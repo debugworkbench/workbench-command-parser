@@ -172,7 +172,7 @@ describe('Parser Tests:', () => {
         ]
       });
       const p = new Parser.CommandParser('', r);
-      const paramA = c.getParameterNode('a')
+      const paramA = c.getParameterNode('a');
       const paramB = c.getParameterNode('b');
       p.advance(makeToken('show'));
       p.advance(makeToken('a'));
