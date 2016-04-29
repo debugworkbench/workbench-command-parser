@@ -79,7 +79,7 @@ function buildNamedParameter (command: CommandNode, config: ParameterNodeConfig)
   config.kind = 'named';
   const p = new nodeConstructor(config);
   const n = new ParameterNameNode({
-    'name': name,
+    'name': config.name,
     'parameter': p,
     'repeatable': config.repeatable,
     'repeatMarker': p
