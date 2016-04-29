@@ -163,20 +163,23 @@ describe('Parser Tests:', () => {
         'parameters': [
           {
             'name': 'a',
-            'kind': 'simple'
+            'kind': 'named'
           },
           {
             'name': 'b',
-            'kind': 'simple'
+            'kind': 'named'
           }
         ]
       });
+      const p = new Parser.CommandParser('', r);
       const paramA = c.getParameterNode('a')
       const paramB = c.getParameterNode('b');
-      const p = new Parser.CommandParser('', r);
-      p.pushParameter(paramA, 'A');
+      p.advance(makeToken('show'));
+      p.advance(makeToken('a'));
+      p.advance(makeToken('A'));
       expect(p.getParameter('a')).to.equal('A');
-      p.pushParameter(paramB, 'B');
+      p.advance(makeToken('b'));
+      p.advance(makeToken('B'));
       expect(p.getParameter('a')).to.equal('A');
       expect(p.getParameter('b')).to.equal('B');
     });
@@ -195,9 +198,10 @@ describe('Parser Tests:', () => {
       });
       const p = new Parser.CommandParser('', r);
       const paramA = c.getParameterNode('a');
-      p.pushParameter(paramA, 'A');
+      p.advance(makeToken('test'));
+      p.advance(makeToken('A'));
       expect(p.getParameter('a')).to.deep.equal(['A']);
-      p.pushParameter(paramA, 'B');
+      p.advance(makeToken('B'));
       expect(p.getParameter('a')).to.deep.equal(['A', 'B']);
     });
   });
