@@ -52,16 +52,6 @@ describe('Parser Tests:', () => {
       const parser = new Parser.CommandParser('', root);
       expect(node.match(parser, makeToken('help'))).to.be.true;
     });
-    it('does not consider hidden nodes for completion', () => {
-      const root = new Parser.RootNode();
-      const node = new Parser.SymbolNode({
-        'hidden': true,
-        'name': 'help'
-      });
-      root.addSuccessor(node);
-      const parser = new Parser.CommandParser('', root);
-      expect(root.possibleCompletions(parser, makeToken('help'))).to.be.empty;
-    });
   });
 
   describe('SymbolNode', () => {
@@ -223,6 +213,24 @@ describe('Parser Tests:', () => {
       expect(p.getParameter('a')).to.deep.equal(['A']);
       p.advance(makeToken('B'));
       expect(p.getParameter('a')).to.deep.equal(['A', 'B']);
+    });
+  });
+
+  describe('Completion', () => {
+    it('does not consider hidden nodes', () => {
+      const root = new Parser.RootNode();
+      const node = new Parser.SymbolNode({
+        'hidden': true,
+        'name': 'help'
+      });
+      root.addSuccessor(node);
+      const parser = new Parser.CommandParser('', root);
+      expect(parser.complete(makeToken('help'))).to.be.empty;
+    });
+    it('handles no valid completeions', () => {
+      const root = new Parser.RootNode();
+      const parser = new Parser.CommandParser('', root);
+      expect(parser.complete()).to.be.empty;
     });
   });
 
