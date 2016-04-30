@@ -51,7 +51,7 @@ export class CommandParser {
    */
   pushParameter (param: ParameterNode, value: any): any {
     if (param.repeatable) {
-      var list = this.parameters.get(param.name) || [];
+      const list = this.parameters.get(param.name) || [];
       list.push(value);
       this.parameters.set(param.name, list);
     } else {
@@ -87,10 +87,10 @@ export class CommandParser {
    * Advance the parser by one step.
    */
   advance (token: CommandToken): void {
-    var possibleMatches = this.currentNode.matchingSuccessors(this, token);
+    const possibleMatches = this.currentNode.matchingSuccessors(this, token);
     // Deal with command priorities.
     if (possibleMatches.length === 1) {
-      var matchingNode = possibleMatches[0];
+      const matchingNode = possibleMatches[0];
       matchingNode.accept(this, token);
       this.pushNode(token, matchingNode);
     } else if (possibleMatches.length === 0) {
@@ -110,7 +110,7 @@ export class CommandParser {
    */
   execute (): void {
     if (this.commands.length > 0) {
-      var command = this.commands[this.commands.length - 1];
+      const command = this.commands[this.commands.length - 1];
       command.execute(this);
     } else {
       throw("No command.");
@@ -177,8 +177,8 @@ export class Completion {
     } else {
       this.exhaustive = false;
     }
-    var completeOptions = options.completeOptions || [];
-    var otherOptions = options.otherOptions || [];
+    let completeOptions = options.completeOptions || [];
+    let otherOptions = options.otherOptions || [];
     // Apply token restrictions.
     if (token) {
       // Filter options using token.
@@ -198,8 +198,8 @@ export class Completion {
     }
     // Add longest common prefix as an incomplete option, but
     // filter it against the existing options and the token.
-    var allOptions = completeOptions.concat(otherOptions);
-    var lcp = longestCommonPrefix(allOptions);
+    const allOptions = completeOptions.concat(otherOptions);
+    const lcp = longestCommonPrefix(allOptions);
     if (lcp && allOptions.indexOf(lcp) === -1) {
       if (!token || (lcp !== token.text)) {
         otherOptions.push(lcp);
@@ -243,10 +243,10 @@ export interface CompletionConfig {
 
 export function longestCommonPrefix(options: string[]): string {
   if (options.length > 0) {
-    for (var i = 0; ; i++) {
-      var first = options[0];
-      for (var j = 0; j < options.length; j++) {
-        var option = options[j];
+    for (let i = 0; ; i++) {
+      const first = options[0];
+      for (let j = 0; j < options.length; j++) {
+        const option = options[j];
         if ((i === option.length) || (option[i] !== first[i])) {
           return first.slice(0, i);
         }

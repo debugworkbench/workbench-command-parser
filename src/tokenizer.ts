@@ -104,28 +104,28 @@ enum State {
  * the contents of that string.
  */
 export function tokenize (text: string): CommandToken[] {
-  var tokens: CommandToken[] = [];
+  const tokens: CommandToken[] = [];
 
-  var state = State.Initial;
-  var tokenType: TokenType = TokenType.Invalid;
-  var tokenStart: number = 0;
-  var tokenEnd: number = 0;
+  let state = State.Initial;
+  let tokenType: TokenType = TokenType.Invalid;
+  let tokenStart: number = 0;
+  let tokenEnd: number = 0;
 
-  var reset = (): void => {
+  const reset = (): void => {
     tokenType = TokenType.Invalid;
     tokenStart = 0;
     tokenEnd = 0;
     state = State.Initial;
   };
-  var reduce = (): void => {
-    var tokenText = text.slice(tokenStart, tokenEnd + 1);
-    var sourceLocation = new SourceLocation(tokenStart, 0, tokenStart, tokenEnd, 0, tokenEnd);
-    var token = new CommandToken(tokenText, tokenType, sourceLocation);
+  const reduce = (): void => {
+    const tokenText = text.slice(tokenStart, tokenEnd + 1);
+    const sourceLocation = new SourceLocation(tokenStart, 0, tokenStart, tokenEnd, 0, tokenEnd);
+    const token = new CommandToken(tokenText, tokenType, sourceLocation);
     tokens.push(token);
     reset();
   };
-  for (var offset = 0; offset < text.length; offset++) {
-    var c = text[offset];
+  for (let offset = 0; offset < text.length; offset++) {
+    const c = text[offset];
     function shift(nextState: State) {
       recognize(nextState);
       tokenEnd = offset;
@@ -133,7 +133,7 @@ export function tokenize (text: string): CommandToken[] {
     }
     function recognize(nextState: State) {
       if (tokenType === TokenType.Invalid) {
-        var newTokenType = TokenType.Word;
+        let newTokenType = TokenType.Word;
         if (nextState === State.Whitespace) {
           newTokenType = TokenType.Whitespace;
         }
