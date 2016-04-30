@@ -64,11 +64,10 @@ export class CommandParser {
    * Perform completion on the current parser state.
    */
   complete (token?: CommandToken): Completion[] {
-    var completions = this.currentNode.possibleCompletions(this, token);
-    var completionForNode = (node: ParserNode): Completion => {
+    const completions = this.currentNode.possibleCompletions(this, token);
+    return completions.map((node: ParserNode): Completion => {
       return node.complete(this, token);
-    };
-    return completions.map(completionForNode);
+    });
   }
 
   /**
