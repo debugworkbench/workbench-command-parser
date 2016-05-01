@@ -110,7 +110,7 @@ export class CommandParser {
    */
   execute (): void {
     if (this.commands.length > 0) {
-      const command = this.commands[this.commands.length - 1];
+      const command = this.commands[0];
       command.execute(this);
     } else {
       throw(new Error("No command."));
