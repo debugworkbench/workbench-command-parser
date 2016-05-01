@@ -3,13 +3,13 @@ import * as Parser from '../../lib/parser';
 import * as Tokenizer from '../../lib/tokenizer';
 import { expect } from 'chai';
 
-const makeToken = (text: string): Tokenizer.CommandToken => {
+export const makeToken = (text: string): Tokenizer.CommandToken => {
   const type = Tokenizer.TokenType.Word;
   const location = new Tokenizer.SourceLocation(0, 0, 0, 0, 0, 0);
   return new Tokenizer.CommandToken(text, type, location);
 };
 
-function nullCommandHandler (): void {
+export function nullCommandHandler (): void {
   // Nothing
 }
 
