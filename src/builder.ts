@@ -42,12 +42,16 @@ export function buildCommand (root: RootNode, config: CommandNodeConfig): Comman
   }
   if (config.parameters) {
     for (const p of config.parameters) {
-      if (p.kind === 'flag') {
-        buildFlagParameter(c, p);
-      } else if (p.kind === 'simple') {
-        buildSimpleParameter(c, p);
-      } else if (p.kind === 'named') {
-        buildNamedParameter(c, p);
+      switch (p.kind) {
+        case 'flag':
+          buildFlagParameter(c, p);
+          break;
+        case 'simple':
+          buildSimpleParameter(c, p);
+          break;
+        case 'named':
+          buildNamedParameter(c, p);
+          break;
       }
     }
   }
