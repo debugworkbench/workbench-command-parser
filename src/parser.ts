@@ -96,7 +96,7 @@ export class CommandParser {
     } else if (possibleMatches.length === 0) {
       throw(new Error('At node ' + this.currentNode + ': No matches for "' + token.text + '"'));
     } else {
-      throw('At node ' + this.currentNode + ': Ambiguous match: ' + possibleMatches);
+      throw(new Error('At node ' + this.currentNode + ': Ambiguous match: ' + possibleMatches));
     }
   }
 
@@ -113,7 +113,7 @@ export class CommandParser {
       const command = this.commands[this.commands.length - 1];
       command.execute(this);
     } else {
-      throw("No command.");
+      throw(new Error("No command."));
     }
   }
 
@@ -391,11 +391,11 @@ export class RootNode extends ParserNode {
   }
 
   complete (parser: CommandParser, token: CommandToken | boolean): Completion {
-    throw("BUG: Tried to complete a root node.");
+    throw(new Error("BUG: Tried to complete a root node."));
   }
 
   match (parser: CommandParser, token: CommandToken): boolean {
-    throw("BUG: Tried to match a root node.");
+    throw(new Error("BUG: Tried to match a root node."));
   }
 }
 

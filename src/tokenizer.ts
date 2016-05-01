@@ -162,7 +162,7 @@ export function tokenize (text: string): CommandToken[] {
       } else if (/\S/.test(c)) {
         shift(State.Word);
       } else {
-        throw("Invalid character.");
+        throw(new Error("Invalid character."));
       }
     }
 
@@ -196,14 +196,14 @@ export function tokenize (text: string): CommandToken[] {
         } else if (/\S/.test(c)) {
           shift(State.Word);
         } else {
-          throw("Character not allowed here.");
+          throw(new Error("Character not allowed here."));
         }
         break;
       case State.WordBackslash:
         if (/S/.test(c)) {
           shift(State.Word);
         } else {
-          throw("Character not allowed here.");
+          throw(new Error("Character not allowed here."));
         }
         break;
       case State.Doublequote:
@@ -220,7 +220,7 @@ export function tokenize (text: string): CommandToken[] {
         if (/\S/.test(c)) {
           shift(State.Doublequote);
         } else {
-          throw("Character not allowed here.");
+          throw(new Error("Character not allowed here."));
         }
     }
   }
