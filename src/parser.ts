@@ -560,6 +560,13 @@ export class WrapperNode extends CommandNode {
   public get successors (): ParserNode[] {
     return this.root.successors;
   }
+
+  /**
+   * @private
+   */
+  toString (): string {
+    return '[Wrapper: ' + this.symbol + ']';
+  }
 }
 
 /**
