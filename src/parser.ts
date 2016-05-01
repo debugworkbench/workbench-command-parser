@@ -4,8 +4,9 @@ export class CommandParser {
   private source: string;
   private initialNode: RootNode;
   private currentNode: ParserNode;
-  private nodes: ParserNode[] = [];
-  private tokens: CommandToken[] = [];
+  // These are temporarily public pending a better idea.
+  public nodes: ParserNode[] = [];
+  public tokens: CommandToken[] = [];
   private commands: CommandNode[] = [];
   private parameters: Map<string, any> = new Map();
 
