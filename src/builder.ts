@@ -7,6 +7,7 @@ import { FlagNode, StringParameterNode } from './nodes';
 import { tokenize, TokenType } from './tokenizer';
 
 export function buildCommand (root: RootNode, config: CommandNodeConfig): CommandNode {
+  const nodeConstructor = config.nodeConstructor || CommandNode;
   function findOrMakeSuccessor (node: ParserNode, name: string, maker: () => ParserNode): ParserNode {
     let found: ParserNode = undefined;
     for (const s of node.successors) {
@@ -30,7 +31,7 @@ export function buildCommand (root: RootNode, config: CommandNodeConfig): Comman
       const commandConfig = Object.assign(config, {
         'name': name,
       });
-      cur = findOrMakeSuccessor(cur, name, () => new CommandNode(commandConfig));
+      cur = findOrMakeSuccessor(cur, name, () => new nodeConstructor(commandConfig));
       c = cur as CommandNode;
     } else {
       const config = {
