@@ -499,12 +499,16 @@ export class CommandNode extends SymbolNode {
 
   constructor (config: CommandNodeConfig) {
     super(config);
-    this.help = config.help;
+    this.help = config.help || "No help.";
     this.handler = config.handler;
   }
 
   getParameterNode (name: string): ParameterNode {
     return this.parameters.find((p) => p.name === name);
+  }
+
+  public helpText (): string {
+    return this.help;
   }
 
   /**
