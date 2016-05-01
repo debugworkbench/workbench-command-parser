@@ -17,6 +17,7 @@
     "files": [
         "../../typings/main.d.ts",
         "parser.test.ts",
-        "tokenizer.test.ts"
+        "tokenizer.test.ts",
+        "help.test.ts"
     ]
 }

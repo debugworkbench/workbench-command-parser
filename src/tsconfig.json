@@ -18,6 +18,7 @@
         "parser.ts",
         "tokenizer.ts",
         "nodes.ts",
-        "builder.ts"
+        "builder.ts",
+        "help.ts"
     ]
 }
