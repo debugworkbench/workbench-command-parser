@@ -445,35 +445,48 @@ export class SymbolNode extends ParserNode {
 }
 
 export interface ParserNodeConfig {
+  /** Hidden nodes are not included in completion. */
   hidden?: boolean;
+  /** Match and completion priority. */
   priority?: number;
 }
 
 export interface SymbolNodeConfig extends ParserNodeConfig {
+  /** The name of the node. It should be a single word. */
   name: string;
 }
 
 export interface CommandNodeConfig extends SymbolNodeConfig {
+  /** Help source for the command. */
   help?: string;
+  /** Handler function. Executed when the command is executed. */
   handler: Function;
+  /** The type of the command node to create. Defaults to [[CommandNode]]. */
   nodeConstructor?: typeof CommandNode;
+  /** The configuration for the parameters to this command. */
   parameters?: Array<ParameterNodeConfig>;
 }
 
 export interface RepeatableNodeConfig extends SymbolNodeConfig {
+  /** Repeatable nodes may re-appear. */
   repeatable?: boolean;
+  /** Don't repeat if this node is already present. This is
+   *  typically used internally within the system. */
   repeatMarker?: ParserNode;
 }
 
+/** @private */
 export interface ParameterNameNodeConfig extends RepeatableNodeConfig {
   parameter: ParameterNode;
 }
 
 export interface ParameterNodeConfig extends RepeatableNodeConfig {
   aliases?: Array<string>;
+  /** @private */
   command?: CommandNode;
   help?: string;
   kind?: ParameterKind;
+  /** The type of the command node to create. Defaults to [[StringParameterNode]]. */
   nodeConstructor?: typeof ParameterNode;
   required?: boolean;
 }

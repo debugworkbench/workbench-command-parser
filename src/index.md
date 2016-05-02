@@ -7,6 +7,9 @@ The command tree is stored starting from a [[RootNode]]. We keep
 this command tree and re-use it with each instance of the
 [[CommandParser]] that we create.
 
+Commands are constructed using [[buildCommand]] which takes a
+[[CommandNodeConfig]] value, creates the corresponding command
+and adds it to the [[RootNode]] passed in.
 
 Basic Usage
 -----------
