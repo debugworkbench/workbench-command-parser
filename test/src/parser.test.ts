@@ -182,8 +182,6 @@ describe('Parser Tests:', () => {
         ]
       });
       const p = new Parser.CommandParser('', r);
-      const paramA = c.getParameterNode('a');
-      const paramB = c.getParameterNode('b');
       p.advance(makeToken('show'));
       p.advance(makeToken('a'));
       p.advance(makeToken('A'));
@@ -240,7 +238,6 @@ describe('Parser Tests:', () => {
         ]
       });
       const p = new Parser.CommandParser('', r);
-      const paramA = c.getParameterNode('a');
       p.advance(makeToken('test'));
       p.advance(makeToken('A'));
       expect(p.getParameter('a')).to.deep.equal(['A']);
