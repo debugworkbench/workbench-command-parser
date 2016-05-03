@@ -27,6 +27,13 @@ export class FlagNode extends ParameterNode {
   }
 
   /**
+   *
+   */
+  match (parse: CommandParser, token: CommandToken): boolean {
+    return this.symbol.startsWith(token.text);
+  }
+
+  /**
    * Parameters complete only to themselves.
    */
   complete (parser: CommandParser, token?: CommandToken): Completion {
