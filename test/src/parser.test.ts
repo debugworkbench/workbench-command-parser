@@ -193,6 +193,39 @@ describe('Parser Tests:', () => {
       expect(p.getParameter('a')).to.equal('A');
       expect(p.getParameter('b')).to.equal('B');
     });
+    it('supports flag parameters', () => {
+      const r = new Parser.RootNode();
+      const c = buildCommand(r, {
+        'name': 'show',
+        'handler': nullCommandHandler,
+        'parameters': [
+          {
+            'name': 'a',
+            'kind': 'flag'
+          },
+          {
+            'name': 'b',
+            'kind': 'flag'
+          },
+          {
+            'name': 'c',
+            'kind': 'named'
+          }
+        ]
+      });
+      const p = new Parser.CommandParser('', r);
+      p.advance(makeToken('show'));
+      p.advance(makeToken('a'));
+      expect(p.getParameter('a')).to.equal(true);
+      p.advance(makeToken('c'));
+      p.advance(makeToken('a'));
+      expect(p.getParameter('a')).to.equal(true);
+      expect(p.getParameter('c')).to.equal('a');
+      p.advance(makeToken('b'));
+      expect(p.getParameter('a')).to.equal(true);
+      expect(p.getParameter('b')).to.equal(true);
+      expect(p.getParameter('c')).to.equal('a');
+    });
     it('can handle repeatable parameters', () => {
       const r = new Parser.RootNode();
       const c = buildCommand(r, {
