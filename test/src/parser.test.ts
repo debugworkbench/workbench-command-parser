@@ -49,7 +49,7 @@ describe('Parser Tests:', () => {
         'name': 'help'
       });
       root.addSuccessor(node);
-      const parser = new Parser.CommandParser('', root);
+      const parser = new Parser.CommandParser(root);
       expect(node.match(parser, makeToken('help'))).to.be.true;
     });
   });
@@ -59,7 +59,7 @@ describe('Parser Tests:', () => {
       const root = new Parser.RootNode();
       const node = new Parser.SymbolNode({'name': 'help'});
       root.addSuccessor(node);
-      const parser = new Parser.CommandParser('', root);
+      const parser = new Parser.CommandParser(root);
       expect(node.match(parser, makeToken('he'))).to.be.true;
       expect(node.match(parser, makeToken('help'))).to.be.true;
       expect(node.match(parser, makeToken('helpe'))).to.be.false;
@@ -125,12 +125,12 @@ describe('Parser Tests:', () => {
   describe('The CommandParser', () => {
     it('errors when executing with no commands', () => {
       const r = new Parser.RootNode();
-      const p = new Parser.CommandParser('', r);
+      const p = new Parser.CommandParser(r);
       expect(p.execute.bind(p)).to.throw('No command.');
     });
     it('is not valid when no command accepted', () => {
       const r = new Parser.RootNode();
-      const p = new Parser.CommandParser('', r);
+      const p = new Parser.CommandParser(r);
       let errors: Array<string> = [];
       expect(p.verify(errors)).to.be.false;
       expect(errors).to.deep.equal(['Incomplete command.']);
@@ -145,9 +145,8 @@ describe('Parser Tests:', () => {
         'name': 'show interface',
         'handler': showInterface
       });
-      const commandText = 'show interface';
-      const p = new Parser.CommandParser(commandText, r);
-      const ts = Tokenizer.tokenize(commandText);
+      const p = new Parser.CommandParser(r);
+      const ts = Tokenizer.tokenize('show interface');
       for (let t of ts) {
         if (t.tokenType === Tokenizer.TokenType.Word) {
           p.advance(t);
@@ -161,7 +160,7 @@ describe('Parser Tests:', () => {
     });
     it('can handle an unset parameter name', () => {
       const r = new Parser.RootNode();
-      const p = new Parser.CommandParser('', r);
+      const p = new Parser.CommandParser(r);
       expect(p.getParameter('none')).to.be.undefined;
       expect(p.getParameter('none', true)).to.be.true;
     });
@@ -181,7 +180,7 @@ describe('Parser Tests:', () => {
           }
         ]
       });
-      const p = new Parser.CommandParser('', r);
+      const p = new Parser.CommandParser(r);
       p.advance(makeToken('show'));
       p.advance(makeToken('a'));
       p.advance(makeToken('A'));
@@ -211,7 +210,7 @@ describe('Parser Tests:', () => {
           }
         ]
       });
-      const p = new Parser.CommandParser('', r);
+      const p = new Parser.CommandParser(r);
       p.advance(makeToken('show'));
       p.advance(makeToken('a'));
       expect(p.getParameter('a')).to.equal(true);
@@ -237,7 +236,7 @@ describe('Parser Tests:', () => {
           }
         ]
       });
-      const p = new Parser.CommandParser('', r);
+      const p = new Parser.CommandParser(r);
       p.advance(makeToken('test'));
       p.advance(makeToken('A'));
       expect(p.getParameter('a')).to.deep.equal(['A']);
@@ -254,12 +253,12 @@ describe('Parser Tests:', () => {
         'name': 'help'
       });
       root.addSuccessor(node);
-      const parser = new Parser.CommandParser('', root);
+      const parser = new Parser.CommandParser(root);
       expect(parser.complete(makeToken('help'))).to.be.empty;
     });
     it('handles no valid completeions', () => {
       const root = new Parser.RootNode();
-      const parser = new Parser.CommandParser('', root);
+      const parser = new Parser.CommandParser(root);
       expect(parser.complete()).to.be.empty;
     });
   });

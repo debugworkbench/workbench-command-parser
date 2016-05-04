@@ -27,7 +27,7 @@ describe('Auto-generated help tests:', () => {
     });
 
     it('gets executed with no arguments', () => {
-        const parser = new Parser.CommandParser('', root);
+        const parser = new Parser.CommandParser(root);
         parser.advance(makeToken('help'));
         expect(parser.execute.bind(parser)).to.throw(/Incomplete command/);
     });
@@ -39,7 +39,7 @@ describe('Auto-generated help tests:', () => {
             expect(commandHelp.help).to.equal('Show an interface');
             validated = true;
         };
-        const parser = new Parser.CommandParser('', root);
+        const parser = new Parser.CommandParser(root);
         parser.advance(makeToken('help'));
         parser.advance(makeToken('show'));
         parser.advance(makeToken('interface'));

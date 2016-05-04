@@ -14,14 +14,14 @@ and adds it to the [[RootNode]] passed in.
 Basic Usage
 -----------
 
-* Construct a [[CommandParser]] with input and a [[RootNode]].
+* Construct a [[CommandParser]] with a [[RootNode]].
 * Tokenize the input.
 * Parse the command.
 * Verify the parsed command.
 * Execute the parsed command.
 
 ```
-const parser = new CommandParser(input, rootNode);
+const parser = new CommandParser(rootNode);
 const tokens = tokenize(input);
 parser.parse(tokens);
 let errors: Array<string> = [];

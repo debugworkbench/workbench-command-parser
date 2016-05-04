@@ -78,9 +78,8 @@ describe('Tokenizer Tests:', () => {
                 'name': 'show interface',
                 'handler': showInterface
             });
-            const commandText = 'show interface';
-            const p = new Parser.CommandParser(commandText, r);
-            const tokens = tokenize(commandText);
+            const p = new Parser.CommandParser(r);
+            const tokens = tokenize('show interface');
             p.parse(tokens);
             p.execute();
             expect(handlerRan).to.be.true;
