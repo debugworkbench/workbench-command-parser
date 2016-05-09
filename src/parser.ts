@@ -643,7 +643,7 @@ export class ParameterNameNode extends RepeatableNode {
   }
 
   public helpSymbol (): string {
-    return this.symbol + this.parameter.helpSymbol();
+    return this.symbol + " " + this.parameter.helpSymbol();
   }
 
   public helpText (): string {
