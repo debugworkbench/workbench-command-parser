@@ -119,7 +119,7 @@ export class CommandParser {
    */
   verify (errorAccumulator: Array<string>): boolean {
     if (this.commands.length > 0) {
-      const command = this.commands[this.commands.length - 1];
+      const command = this.commands[0];
       const expected = command.parameters;
       const provided = this.parameters;
       expected.forEach(parameter => {
