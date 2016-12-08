@@ -106,10 +106,10 @@ enum State {
 export function tokenize (text: string): CommandToken[] {
   const tokens: CommandToken[] = [];
 
-  let state = State.Initial;
-  let tokenType: TokenType = TokenType.Invalid;
-  let tokenStart: number = 0;
-  let tokenEnd: number = 0;
+  let state: State;
+  let tokenType: TokenType;
+  let tokenStart: number;
+  let tokenEnd: number;
 
   const reset = (): void => {
     tokenType = TokenType.Invalid;
@@ -124,6 +124,8 @@ export function tokenize (text: string): CommandToken[] {
     tokens.push(token);
     reset();
   };
+  // Initialize
+  reset();
   for (let offset = 0; offset < text.length; offset++) {
     const c = text[offset];
     function shift(nextState: State) {
