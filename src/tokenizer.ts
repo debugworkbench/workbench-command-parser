@@ -14,9 +14,9 @@
  * A position within a string.
  */
 export class SourceOffset {
-  char: number;
-  line: number;
-  column: number;
+  readonly char: number;
+  readonly line: number;
+  readonly column: number;
 
   constructor (char: number, line: number, column: number) {
     this.char = char;
@@ -29,8 +29,8 @@ export class SourceOffset {
  * A range within a string.
  */
 export class SourceLocation {
-  startOffset: SourceOffset;
-  endOffset: SourceOffset;
+  readonly startOffset: SourceOffset;
+  readonly endOffset: SourceOffset;
 
   constructor (startChar: number, startLine: number, startColumn: number,
                endChar: number, endLine: number, endColumn: number) {
@@ -57,35 +57,23 @@ export enum TokenType {
  * the string or whitespace.
  */
 export class CommandToken {
-  private text_: string;
-  private tokenType_: TokenType;
-  private location_: SourceLocation;
-
-  constructor (text: string, tokenType: TokenType, location: SourceLocation) {
-    this.text_ = text;
-    this.tokenType_ = tokenType;
-    this.location_ = location;
-  }
-
   /**
    * The text of the token.
    */
-  public get text (): string {
-    return this.text_;
-  }
-
+  readonly text: string;
   /**
    * The type of the token.
    */
-  public get tokenType (): TokenType {
-    return this.tokenType_;
-  }
-
+  readonly tokenType: TokenType;
   /**
    * The location of the token within the source string.
    */
-  public get location (): SourceLocation {
-    return this.location_;
+  readonly location: SourceLocation;
+
+  constructor (text: string, tokenType: TokenType, location: SourceLocation) {
+    this.text = text;
+    this.tokenType = tokenType;
+    this.location = location;
   }
 }
 
