@@ -3,11 +3,17 @@ import { CommandNode, CommandParser,
     RootNode, WrapperNode, WrapperNodeConfig } from './parser';
 import { buildCommand } from './builder';
 
+/**
+ * Support for automatically generated 'help' commands.
+ */
+
+/** Description of a subcommand. */
 export interface SubcommandHelp {
   symbol: string;
   help: string;
 }
 
+/** Description of a command parameter. */
 export interface ParameterHelp {
   symbol: string;
   help: string;
@@ -25,6 +31,12 @@ export interface CommandHelp {
   parameters: Array<ParameterHelp>;
 }
 
+/**
+ * Adds a 'help' command to the given root node.
+ *
+ * @param root Root node to add the command to.
+ * @param renderer Function that will be used by the help command to render its output.
+ */
 export function addHelpCommand (root: RootNode, renderer: (help: CommandHelp) => void): void {
   buildCommand(root, <WrapperNodeConfig>{
     name: 'help',
