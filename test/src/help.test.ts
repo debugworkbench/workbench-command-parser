@@ -48,4 +48,20 @@ describe('Auto-generated help tests:', () => {
         validator = undefined;
     });
 
+    it('handles subcommands', () => {
+        let validated = false;
+        validator = (commandHelp: CommandHelp) => {
+            expect(commandHelp.title).to.equal('show');
+            expect(commandHelp.help).to.equal('Show stuff');
+            expect(commandHelp.subcommands[0].symbol).to.equal('interface');
+            expect(commandHelp.subcommands[0].help).to.equal('Show an interface');
+            validated = true;
+        };
+        const parser = new Parser.CommandParser(root);
+        parser.advance(makeToken('help'));
+        parser.advance(makeToken('show'));
+        parser.execute();
+        expect(validated).to.be.true;
+        validator = undefined;
+    });
 });
