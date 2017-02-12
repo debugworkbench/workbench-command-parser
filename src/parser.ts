@@ -281,13 +281,13 @@ export abstract class ParserNode {
   /** Possible successor nodes (collected while building). */
   protected successors_: ParserNode[] = [];
   /** Match and completion priority. */
-  protected priority_: number;
+  readonly priority: number;
   /** Hidden nodes are not completed. */
-  protected hidden_: boolean;
+  readonly hidden: boolean;
 
   constructor (config: SymbolNodeConfig) {
-    this.priority_ = config.priority || NodePriority.Default;
-    this.hidden_ = config.hidden || false;
+    this.priority = config.priority || NodePriority.Default;
+    this.hidden = config.hidden || false;
   }
 
   public get successors (): ParserNode[] {
@@ -355,7 +355,7 @@ export abstract class ParserNode {
     // Filter out hidden nodes, non-acceptable nodes and, if there is a token,
     // filter with that as well.
     return this.successors.filter(node => {
-      return !node.hidden_ && node.acceptable(parser) && (!token || node.match(parser, token));
+      return !node.hidden && node.acceptable(parser) && (!token || node.match(parser, token));
     });
   }
 
@@ -402,11 +402,11 @@ export class RootNode extends ParserNode {
  * Used to build commands and parameter prefixes.
  */
 export class SymbolNode extends ParserNode {
-  private symbol_: string;
+  readonly symbol: string;
 
   constructor (config: SymbolNodeConfig) {
     super(config);
-    this.symbol_ = config.name;
+    this.symbol = config.name;
   }
 
   /**
@@ -414,10 +414,6 @@ export class SymbolNode extends ParserNode {
    */
   toString (): string {
     return '[SymbolNode: ' + this.symbol + ']';
-  }
-
-  public get symbol (): string {
-    return this.symbol_;
   }
 
   public helpSymbol (): string {
@@ -596,21 +592,13 @@ export class WrapperNode extends CommandNode {
  * no longer be acceptable.
  */
 export class RepeatableNode extends SymbolNode {
-  private repeatable_: boolean = false;
-  private repeatMarker_: ParserNode;
+  readonly repeatable: boolean = false;
+  readonly repeatMarker: ParserNode;
 
   constructor (config: RepeatableNodeConfig) {
     super(config);
-    this.repeatable_ = config.repeatable;
-    this.repeatMarker_ = config.repeatMarker;
-  }
-
-  public get repeatable (): boolean {
-    return this.repeatable_ || false;
-  }
-
-  public get repeatMarker (): ParserNode {
-    return this.repeatMarker_;
+    this.repeatable = config.repeatable;
+    this.repeatMarker = config.repeatMarker;
   }
 
   /**
@@ -668,28 +656,16 @@ export type ParameterKind = 'flag' | 'named' | 'simple';
  */
 export class ParameterNode extends RepeatableNode {
   private command: CommandNode;
-  private help_: string;
-  private kind_: ParameterKind;
-  private required_: boolean;
-
-  public get help (): string {
-    return this.help_;
-  }
-
-  public get kind (): ParameterKind {
-    return this.kind_;
-  }
-
-  public get required (): boolean {
-    return this.required_;
-  }
+  readonly help: string;
+  readonly kind: ParameterKind;
+  readonly required: boolean;
 
   constructor (config: ParameterNodeConfig) {
     super(config);
     this.command = config.command;
-    this.help_ = config.help;
-    this.kind_ = config.kind;
-    this.required_ = config.required || false;
+    this.help = config.help;
+    this.kind = config.kind;
+    this.required = config.required || false;
   }
 
   public get name (): string {
