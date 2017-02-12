@@ -4,7 +4,7 @@ import { addHelpCommand, CommandHelp } from '../../lib/help';
 import { makeToken, nullCommandHandler } from './parser.test';
 import { expect } from 'chai';
 
-describe('Auto-generated help tests:', () => {
+describe('Auto-generated help', () => {
     const root = new Parser.RootNode();
     buildCommand(root, {
         name: 'show',
